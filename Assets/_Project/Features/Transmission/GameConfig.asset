@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67bde44d62f68f3458723488a90bab61, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: Assembly-CSharp::GameConfig
+  startHp: 10
+  maxUniversalPerRound: 1
+  rounds:
+  - signalCount: 3
+    decryptCount: 3
+    orderCount: 3
+    minFakes: 0
+    maxFakes: 0
+    weightPower1: 30
+    weightPower2: 30
+    weightPower3: 40
+    revealTypes: 0
+    realityEnabled: 0
+  - signalCount: 4
+    decryptCount: 4
+    orderCount: 3
+    minFakes: 1
+    maxFakes: 1
+    weightPower1: 30
+    weightPower2: 30
+    weightPower3: 40
+    revealTypes: 1
+    realityEnabled: 1
+  - signalCount: 4
+    decryptCount: 4
+    orderCount: 2
+    minFakes: 1
+    maxFakes: 2
+    weightPower1: 30
+    weightPower2: 30
+    weightPower3: 40
+    revealTypes: 0
+    realityEnabled: 1
+  - signalCount: 4
+    decryptCount: 4
+    orderCount: 2
+    minFakes: 1
+    maxFakes: 2
+    weightPower1: 30
+    weightPower2: 30
+    weightPower3: 40
+    revealTypes: 0
+    realityEnabled: 1
+  - signalCount: 4
+    decryptCount: 4
+    orderCount: 2
+    minFakes: 1
+    maxFakes: 2
+    weightPower1: 30
+    weightPower2: 30
+    weightPower3: 40
+    revealTypes: 0
+    realityEnabled: 1
+  - signalCount: 4
+    decryptCount: 4
+    orderCount: 2
+    minFakes: 1
+    maxFakes: 2
+    weightPower1: 30
+    weightPower2: 30
+    weightPower3: 40
+    revealTypes: 0
+    realityEnabled: 1
+  - signalCount: 4
+    decryptCount: 4
+    orderCount: 2
+    minFakes: 1
+    maxFakes: 2
+    weightPower1: 30
+    weightPower2: 30
+    weightPower3: 40
+    revealTypes: 0
+    realityEnabled: 1
