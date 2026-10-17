@@ -7,7 +7,7 @@ public class TeletypeView : MonoBehaviour
 {
     [SerializeField] private GameController controller;
     [SerializeField] private TMP_Text text;
-    [SerializeField, Min(1)] private int maxLines = 6;
+    [SerializeField, Min(1)] private int maxLines = 5;
     [SerializeField, Min(1f)] private float charsPerSecond = 60f;
 
     private readonly Queue<string> pending = new Queue<string>();
@@ -79,17 +79,16 @@ public class TeletypeView : MonoBehaviour
             }
         }
 
-        Print($"HP {session.Hp}/{session.MaxHp}");
         switch (session.Phase)
         {
             case GamePhase.Won:
-                Print("STATION SURVIVED. CONFIRM TO RESTART");
+                Print($"HP {session.Hp}/{session.MaxHp}. SURVIVED. PRESS RESTART");
                 break;
             case GamePhase.Lost:
-                Print("STATION LOST. CONFIRM TO RESTART");
+                Print($"HP {session.Hp}/{session.MaxHp}. STATION LOST. PRESS RESTART");
                 break;
             default:
-                Print("CONFIRM FOR NEXT ROUND");
+                Print($"HP {session.Hp}/{session.MaxHp}. PRESS NEXT");
                 break;
         }
     }

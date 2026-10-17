@@ -26,6 +26,7 @@ public class GameSession
     public int OrdersTotal => currentRound.OrderCount;
     public bool RealityEnabled => currentRound.RealityEnabled;
     public int UniversalLeft => config.MaxUniversalPerRound - CountOrders(DefenseType.Universal);
+    public bool CanConfirm => Phase != GamePhase.Planning || OrdersLeft <= 0 || orders.Count >= attacks.Count;
     public int LastDamage { get; private set; }
     public GamePhase Phase { get; private set; }
     public IReadOnlyList<Attack> Attacks => attacks;
@@ -111,7 +112,7 @@ public class GameSession
 
     public void ConfirmOrders()
     {
-        if (Phase != GamePhase.Planning)
+        if (Phase != GamePhase.Planning || !CanConfirm)
         {
             return;
         }
