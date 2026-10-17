@@ -11,12 +11,19 @@ public class GameSession
     private RoundConfig currentRound;
 
     public event Action Changed;
+    public event Action RoundStarted;
+    public event Action<Attack> TypeRevealed;
+    public event Action<Attack> RealityRevealed;
+    public event Action RoundResolved;
 
     public int Hp { get; private set; }
+    public int MaxHp => config.StartHp;
     public int RoundIndex { get; private set; }
     public int RoundCount => config.Rounds.Count;
     public int DecryptsLeft { get; private set; }
+    public int DecryptTotal => currentRound.DecryptCount;
     public int OrdersLeft => currentRound.OrderCount - orders.Count;
+    public int OrdersTotal => currentRound.OrderCount;
     public bool RealityEnabled => currentRound.RealityEnabled;
     public int UniversalLeft => config.MaxUniversalPerRound - CountOrders(DefenseType.Universal);
     public int LastDamage { get; private set; }
@@ -51,6 +58,7 @@ public class GameSession
 
         attack.RevealType();
         DecryptsLeft--;
+        TypeRevealed?.Invoke(attack);
         Changed?.Invoke();
         return true;
     }
@@ -64,6 +72,7 @@ public class GameSession
 
         attack.RevealReality();
         DecryptsLeft--;
+        RealityRevealed?.Invoke(attack);
         Changed?.Invoke();
         return true;
     }
@@ -132,6 +141,7 @@ public class GameSession
             Phase = GamePhase.Report;
         }
 
+        RoundResolved?.Invoke();
         Changed?.Invoke();
     }
 
@@ -180,6 +190,7 @@ public class GameSession
         DecryptsLeft = currentRound.DecryptCount;
         orders.Clear();
         Phase = GamePhase.Planning;
+        RoundStarted?.Invoke();
         Changed?.Invoke();
     }
 }
