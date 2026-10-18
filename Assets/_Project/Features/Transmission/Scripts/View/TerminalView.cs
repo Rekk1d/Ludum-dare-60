@@ -14,6 +14,7 @@ public class TerminalView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Min(1)] private int maxLines = 5;
     [SerializeField, Min(1f)] private float charsPerSecond = 60f;
     [SerializeField, Range(0f, 1f)] private float garbleChance = 0.25f;
+    [SerializeField, Range(0f, 1f)] private float interferenceGarbleChance = 0.15f;
     [SerializeField] private TypingSound typing;
     [SerializeField, Min(0f)] private float spacePause = 0.05f;
 
@@ -195,20 +196,23 @@ public class TerminalView : MonoBehaviour, IPointerClickHandler
     private void Print(string line)
     {
         var session = controller.Session;
-        var garbled = session.TimerScrambled && session.ClockRunning;
-        _pending.Enqueue("> " + (garbled ? Garble(line) : line));
+        var chance = !session.ClockRunning ? 0f
+            : session.TimerScrambled ? garbleChance
+            : session.Ghosts.Count > 0 ? interferenceGarbleChance
+            : 0f;
+        _pending.Enqueue("> " + (chance > 0f ? Garble(line, chance) : line));
         if (_typing == null)
         {
             _typing = StartCoroutine(Type());
         }
     }
 
-    private string Garble(string line)
+    private string Garble(string line, float chance)
     {
         var chars = line.ToCharArray();
         for (var i = 0; i < chars.Length; i++)
         {
-            if (chars[i] != ' ' && UnityEngine.Random.value < garbleChance)
+            if (chars[i] != ' ' && UnityEngine.Random.value < chance)
             {
                 chars[i] = GarbleChars[UnityEngine.Random.Range(0, GarbleChars.Length)];
             }

@@ -21892,7 +21892,8 @@ MonoBehaviour:
   text: {fileID: 2130747670}
   maxLines: 5
   charsPerSecond: 20
-  garbleChance: 0.25
+  garbleChance: 0.2
+  interferenceGarbleChance: 0.1
   typing: {fileID: 2060094416}
   spacePause: 0.05
 --- !u!1 &2145748574
