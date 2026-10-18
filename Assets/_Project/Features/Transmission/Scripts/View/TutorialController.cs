@@ -10,6 +10,7 @@ public class TutorialController : MonoBehaviour
     [SerializeField] private SectorRowView[] rows;
     [SerializeField] private TutorialTip[] tips;
     [SerializeField, Min(0f)] private float tipDelay = 2f;
+    [SerializeField] private AlarmView alarm;
 
     private Coroutine _running;
     private bool _next;
@@ -138,9 +139,19 @@ public class TutorialController : MonoBehaviour
         var tip = tips[index];
         _next = false;
         view.Show(tip.Title, tip.Body, tip.Top, IsLast(index), Highlight(tip));
+        if (tip.Alarm)
+        {
+            alarm.StartAlarm(true);
+        }
+
         while (!_next && !Done(tip.Goal) && (tip.BeforeClock || Session.Phase == GamePhase.Planning))
         {
             yield return null;
+        }
+
+        if (tip.Alarm)
+        {
+            alarm.StopAlarm();
         }
 
         view.Hide();

@@ -22,6 +22,8 @@ public class TutorialView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Min(0)] private int pulsePixels = 1;
     [SerializeField, Min(0.05f)] private float pulseInterval = 0.4f;
     [SerializeField, Min(1f)] private float charsPerSecond = 60f;
+    [SerializeField] private TypingSound typing;
+    [SerializeField, Min(0f)] private float spacePause = 0.05f;
 
     private readonly Vector3[] _worldCorners = new Vector3[4];
     private Coroutine _typing;
@@ -103,22 +105,25 @@ public class TutorialView : MonoBehaviour, IPointerClickHandler
         }
 
         var delay = new WaitForSeconds(1f / charsPerSecond);
-        yield return TypeText(titleText, delay);
+        var spaceDelay = new WaitForSeconds(1f / charsPerSecond + spacePause);
+        yield return TypeText(titleText, delay, spaceDelay);
         foreach (var line in lines)
         {
-            yield return TypeText(line, delay);
+            yield return TypeText(line, delay, spaceDelay);
         }
 
         _typing = null;
     }
 
-    private IEnumerator TypeText(TMP_Text text, WaitForSeconds delay)
+    private IEnumerator TypeText(TMP_Text text, WaitForSeconds delay, WaitForSeconds spaceDelay)
     {
         var length = text.text.Length;
         for (var i = 1; i <= length && !_skip; i++)
         {
             text.maxVisibleCharacters = i;
-            yield return delay;
+            var character = text.text[i - 1];
+            typing.Play(character);
+            yield return character == ' ' ? spaceDelay : delay;
         }
 
         text.maxVisibleCharacters = length;

@@ -14,6 +14,7 @@ public class MenuController : MonoBehaviour
     [SerializeField] private GameObject radarGlassOff;
     [SerializeField] private GameObject[] poweredLabels;
     [SerializeField, Min(0f)] private float endDelay = 1f;
+    [SerializeField, Min(0f)] private float manualDelay = 0.5f;
 
     private void Start()
     {
@@ -49,7 +50,7 @@ public class MenuController : MonoBehaviour
             SetPowered(true);
             if (!replay)
             {
-                manualSheet.Open(true);
+                StartCoroutine(OpenManual());
                 return;
             }
 
@@ -74,6 +75,12 @@ public class MenuController : MonoBehaviour
         {
             label.SetActive(powered);
         }
+    }
+
+    private IEnumerator OpenManual()
+    {
+        yield return new WaitForSeconds(manualDelay);
+        manualSheet.Open(true);
     }
 
     private void OnEndPrinted()

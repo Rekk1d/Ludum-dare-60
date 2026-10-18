@@ -14,6 +14,8 @@ public class TerminalView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Min(1)] private int maxLines = 5;
     [SerializeField, Min(1f)] private float charsPerSecond = 60f;
     [SerializeField, Range(0f, 1f)] private float garbleChance = 0.25f;
+    [SerializeField] private TypingSound typing;
+    [SerializeField, Min(0f)] private float spacePause = 0.05f;
 
     private readonly Queue<string> _pending = new Queue<string>();
     private readonly List<string> _lines = new List<string>();
@@ -232,6 +234,7 @@ public class TerminalView : MonoBehaviour, IPointerClickHandler
     private IEnumerator Type()
     {
         var delay = new WaitForSeconds(1f / charsPerSecond);
+        var spaceDelay = new WaitForSeconds(1f / charsPerSecond + spacePause);
         _skipped = false;
         while (_pending.Count > 0)
         {
@@ -254,7 +257,9 @@ public class TerminalView : MonoBehaviour, IPointerClickHandler
                 text.text = string.Join("\n", _lines);
                 if (!_skip)
                 {
-                    yield return delay;
+                    var character = line[i - 1];
+                    typing.Play(character);
+                    yield return character == ' ' ? spaceDelay : delay;
                 }
             }
         }

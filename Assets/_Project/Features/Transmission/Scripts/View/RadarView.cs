@@ -25,6 +25,7 @@ public class RadarView : MonoBehaviour
     [SerializeField] private Color sweepColor = new Color(0.557f, 0.941f, 0.541f, 1f);
     [SerializeField] private float blinkInterval = 0.4f;
     [SerializeField] private Color fakeColor = new Color(1f, 1f, 1f, 0.35f);
+    [SerializeField] private SoundPlayer sound;
 
     private readonly List<Image> _blips = new List<Image>();
     private readonly List<Image> _frames = new List<Image>();
@@ -86,6 +87,11 @@ public class RadarView : MonoBehaviour
         var angle = session.SweepAngle;
         DrawSweep(angle, session.LockWindow);
         UpdateTargets(session, _previousAngle, angle);
+        if (session.IsStarted && session.Phase == GamePhase.Planning && angle < _previousAngle)
+        {
+            sound.PlayRadar();
+        }
+
         _previousAngle = angle;
     }
 

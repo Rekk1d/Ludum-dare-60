@@ -9,6 +9,7 @@ public class LockButtonView : MonoBehaviour, IPointerDownHandler
     [SerializeField] private Image label;
     [SerializeField] private Sprite labelSprite;
     [SerializeField] private Sprite labelDisabledSprite;
+    [SerializeField] private SoundPlayer sound;
 
     private void Start()
     {
@@ -28,6 +29,7 @@ public class LockButtonView : MonoBehaviour, IPointerDownHandler
     {
         if (button.interactable)
         {
+            sound.PlayLock();
             controller.Session.Lock();
         }
     }

@@ -13,6 +13,7 @@ public class TutorialTip
     [SerializeField] private RectTransform[] targets;
     [SerializeField] private bool top;
     [SerializeField] private bool revealsTimer;
+    [SerializeField] private bool alarm;
 
     public int Round => round;
     public bool BeforeClock => beforeClock;
@@ -23,4 +24,5 @@ public class TutorialTip
     public RectTransform[] Targets => targets;
     public bool Top => top;
     public bool RevealsTimer => revealsTimer;
+    public bool Alarm => alarm;
 }

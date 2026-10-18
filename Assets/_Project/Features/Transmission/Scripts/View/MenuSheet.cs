@@ -22,6 +22,9 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
     [SerializeField] private float offscreenDistance = 270f;
     [SerializeField, Min(0)] private int shakePixels = 2;
     [SerializeField, Min(0.01f)] private float shakeStep = 0.06f;
+    [SerializeField] private TypingSound typing;
+    [SerializeField] private SoundPlayer sound;
+    [SerializeField, Min(0f)] private float spacePause = 0.08f;
 
     private Vector2 _restPosition;
     private string[] _fullTexts;
@@ -62,6 +65,7 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
 
     private void OnOptionClicked(MenuOption option)
     {
+        sound.PlaySelect();
         OptionClicked?.Invoke(Array.IndexOf(options, option));
     }
 
@@ -110,13 +114,16 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
 
         var delay = new WaitForSeconds(1f / charsPerSecond);
         var pause = new WaitForSeconds(linePause);
+        var spaceDelay = new WaitForSeconds(1f / charsPerSecond + spacePause);
         for (var i = 0; i < typedTexts.Length; i++)
         {
             var full = _fullTexts[i];
             for (var c = 0; c < full.Length && !_skip; c++)
             {
                 typedTexts[i].maxVisibleCharacters = c + 1;
-                yield return full[c] == '\n' ? pause : delay;
+                var character = full[c];
+                typing.Play(character);
+                yield return character == '\n' ? pause : character == ' ' ? spaceDelay : delay;
             }
 
             if (_skip)
@@ -174,6 +181,7 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
 
     private IEnumerator Slide(Vector2 from, Vector2 to, bool accelerate)
     {
+        sound.PlayPaper();
         for (var time = 0f; time < slideDuration; time += Time.deltaTime)
         {
             var t = time / slideDuration;
@@ -188,6 +196,7 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
 
     private IEnumerator Shake()
     {
+        sound.PlayStamp();
         var step = new WaitForSeconds(shakeStep);
         paper.anchoredPosition = _restPosition + new Vector2(shakePixels, 0f);
         yield return step;

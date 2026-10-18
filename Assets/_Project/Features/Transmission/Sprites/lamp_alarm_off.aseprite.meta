@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 02bbe620881a63143be3c7b8d5f18f3b
+guid: 385e3005ab5bc8c4eb281e723da92c4a
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -125,7 +125,7 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: dialog_frame_9slice
+  - name: lamp_alarm_off
     originalName: 
     pivot: {x: 0.5, y: 0}
     alignment: 9
@@ -135,9 +135,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 24
-      height: 24
-    spriteID: 80b137bbc7fb02d47afffc43e8d73569
+      width: 25
+      height: 8
+    spriteID: d3aa54021826b5543994a4d38a0c85f7
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -151,25 +151,25 @@ ScriptedImporter:
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 489977038
+      value0: 3010540716
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: dialog_frame_9slice
+    name: lamp_alarm_off
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: dialog_frame_9slice
+    - name: lamp_alarm_off
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
         x: 0
         y: 0
-        width: 24
-        height: 24
-      spriteId: 80b137bbc7fb02d47afffc43e8d73569
+        width: 25
+        height: 8
+      spriteId: d3aa54021826b5543994a4d38a0c85f7
     linkedCells: []
     tileCells: []
     tileSetIndex: 0
@@ -178,5 +178,5 @@ ScriptedImporter:
   platformSettings: []
   generatePhysicsShape: 0
   secondarySpriteTextures: []
-  previousTextureSize: {x: 32, y: 32}
-  canvasSize: {x: 24, y: 24}
+  previousTextureSize: {x: 64, y: 16}
+  canvasSize: {x: 25, y: 8}
