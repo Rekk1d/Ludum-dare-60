@@ -9,6 +9,7 @@ public class StatusBarView : MonoBehaviour
     [SerializeField] private LampStrip decryptLamps;
     [SerializeField] private LampStrip orderLamps;
     [SerializeField, Min(1)] private int brokenFromWave = 3;
+    [SerializeField] private GameObject validHeader;
 
     private void Start()
     {
@@ -29,6 +30,7 @@ public class StatusBarView : MonoBehaviour
         var session = controller.Session;
         if (!session.IsStarted)
         {
+            validHeader.SetActive(false);
             hpLamps.SetState(hpLamps.Capacity, 0);
             roundText.text = string.Empty;
             decryptLamps.SetState(decryptLamps.Capacity, 0);
@@ -36,6 +38,7 @@ public class StatusBarView : MonoBehaviour
             return;
         }
 
+        validHeader.SetActive(session.RealityEnabled || session.RoundIndex > 0);
         hpLamps.SetState(session.MaxHp, session.Hp);
         roundText.text = (session.RoundIndex + 1).ToString("00");
         var broken = session.RoundIndex + 1 >= brokenFromWave;

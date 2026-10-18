@@ -55,7 +55,7 @@ public class SectorRowView : MonoBehaviour
         {
             threatLamps.SetState(3, 0);
             typeSlot.SetState(false, false, string.Empty);
-            realitySlot.SetState(false, false, string.Empty);
+            realitySlot.Hide();
             foreach (var defenseButton in defenseButtons)
             {
                 defenseButton.SetState(false, false);
