@@ -12,6 +12,7 @@ public class StatusBarView : MonoBehaviour
     private void Start()
     {
         controller.Session.Changed += Refresh;
+        Refresh();
     }
 
     private void OnDestroy()
@@ -25,6 +26,15 @@ public class StatusBarView : MonoBehaviour
     private void Refresh()
     {
         var session = controller.Session;
+        if (!session.IsStarted)
+        {
+            hpLamps.SetState(0, 0);
+            roundText.text = string.Empty;
+            decryptLamps.SetState(0, 0);
+            orderLamps.SetState(0, 0);
+            return;
+        }
+
         hpLamps.SetState(session.MaxHp, session.Hp);
         roundText.text = (session.RoundIndex + 1).ToString("00");
         decryptLamps.SetState(session.DecryptTotal, session.DecryptsLeft);

@@ -13,6 +13,7 @@ public class GameSession
     private RoundConfig _currentRound;
     private float _elapsed;
     private float _lockBlockedUntil;
+    private bool _replay;
 
     public event Action Changed;
     public event Action RoundStarted;
@@ -23,6 +24,7 @@ public class GameSession
     public event Action<Attack> TargetLost;
     public event Action RoundResolved;
 
+    public bool IsStarted { get; private set; }
     public int Hp { get; private set; }
     public int MaxHp => _config.StartHp;
     public int RoundIndex { get; private set; }
@@ -35,7 +37,7 @@ public class GameSession
     public int UniversalLeft => _config.MaxUniversalPerRound - CountOrders(DefenseType.Universal);
     public bool ClockRunning { get; private set; }
     public bool IsActive => Phase == GamePhase.Planning && ClockRunning;
-    public bool CanConfirm => Phase != GamePhase.Planning || (ClockRunning && (OrdersLeft <= 0 || _orders.Count >= _attacks.Count));
+    public bool CanConfirm => Phase == GamePhase.Report || (Phase == GamePhase.Planning && ClockRunning && (OrdersLeft <= 0 || _orders.Count >= _attacks.Count));
     public bool LockBlocked => _elapsed < _lockBlockedUntil;
     public bool CanLock => IsActive && !LockBlocked && (_attacks.Exists(attack => !attack.Locked && !attack.Lost) || _ghosts.Exists(ghost => !ghost.Gone));
     public bool HasTimer => _currentRound != null && _currentRound.TimerSeconds > 0f;
@@ -58,8 +60,10 @@ public class GameSession
         _generator = new ThreatGenerator(random);
     }
 
-    public void StartGame()
+    public void StartGame(bool replay)
     {
+        _replay = replay;
+        IsStarted = true;
         Hp = _config.StartHp;
         RoundIndex = 0;
         BeginRound();
@@ -365,6 +369,12 @@ public class GameSession
         return (SweepAngle - angle + 360f) % 360f <= _config.LockWindow;
     }
 
+    private RoundConfig RoundAt(int index)
+    {
+        var replayRounds = _config.ReplayRounds;
+        return _replay && index < replayRounds.Count ? replayRounds[index] : _config.Rounds[index];
+    }
+
     private int CountOrders(DefenseType defense)
     {
         var count = 0;
@@ -381,7 +391,7 @@ public class GameSession
 
     private void BeginRound()
     {
-        _currentRound = _config.Rounds[RoundIndex];
+        _currentRound = RoundAt(RoundIndex);
         _attacks = _generator.Generate(_currentRound, _config.AngleSpread);
         _ghosts = _generator.GenerateGhosts(_currentRound, _attacks, _config.GhostSeparation);
         _elapsed = 0f;

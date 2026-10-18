@@ -21,6 +21,7 @@ public class GameConfig : ScriptableObject
         new RoundConfig(4, 4, 2, 1, 2, 30f, 30f, 40f),
         new RoundConfig(4, 4, 2, 1, 2, 30f, 30f, 40f)
     };
+    [SerializeField] private List<RoundConfig> replayRounds = new List<RoundConfig>();
 
     public int StartHp => startHp;
     public int MaxUniversalPerRound => maxUniversalPerRound;
@@ -30,4 +31,5 @@ public class GameConfig : ScriptableObject
     public float GhostLockPenalty => ghostLockPenalty;
     public float GhostSeparation => ghostSeparation;
     public IReadOnlyList<RoundConfig> Rounds => rounds;
+    public IReadOnlyList<RoundConfig> ReplayRounds => replayRounds;
 }

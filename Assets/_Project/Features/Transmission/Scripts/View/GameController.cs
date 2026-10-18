@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,12 +16,6 @@ public class GameController : MonoBehaviour
         terminal.IntroPrinted += OnIntroPrinted;
     }
 
-    private IEnumerator Start()
-    {
-        yield return null;
-        Session.StartGame();
-    }
-
     private void Update()
     {
         Session.Tick(Time.deltaTime);
@@ -34,6 +27,11 @@ public class GameController : MonoBehaviour
         {
             terminal.IntroPrinted -= OnIntroPrinted;
         }
+    }
+
+    public void StartGame(bool replay)
+    {
+        Session.StartGame(replay);
     }
 
     private void OnIntroPrinted()
@@ -50,9 +48,6 @@ public class GameController : MonoBehaviour
                 break;
             case GamePhase.Report:
                 Session.NextRound();
-                break;
-            default:
-                Session.StartGame();
                 break;
         }
     }

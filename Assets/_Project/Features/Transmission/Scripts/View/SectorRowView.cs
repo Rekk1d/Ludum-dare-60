@@ -22,6 +22,8 @@ public class SectorRowView : MonoBehaviour
             var type = defenseButton.Type;
             defenseButton.Button.onClick.AddListener(() => OnDefenseClicked(type));
         }
+
+        Refresh();
     }
 
     private void OnDestroy()
@@ -35,6 +37,19 @@ public class SectorRowView : MonoBehaviour
     private void Refresh()
     {
         var session = controller.Session;
+        if (!session.IsStarted)
+        {
+            threatLamps.SetState(3, 0);
+            typeSlot.SetState(false, false, string.Empty);
+            realitySlot.SetState(false, false, string.Empty);
+            foreach (var defenseButton in defenseButtons)
+            {
+                defenseButton.SetState(false, false);
+            }
+
+            return;
+        }
+
         var attack = FindAttack();
         var planning = session.Phase == GamePhase.Planning;
 

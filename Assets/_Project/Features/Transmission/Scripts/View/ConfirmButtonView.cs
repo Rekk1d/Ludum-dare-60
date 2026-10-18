@@ -8,11 +8,11 @@ public class ConfirmButtonView : MonoBehaviour
     [SerializeField] private Image label;
     [SerializeField] private Sprite planningSprite;
     [SerializeField] private Sprite reportSprite;
-    [SerializeField] private Sprite endSprite;
 
     private void Start()
     {
         controller.Session.Changed += Refresh;
+        Refresh();
     }
 
     private void OnDestroy()
@@ -25,18 +25,9 @@ public class ConfirmButtonView : MonoBehaviour
 
     private void Refresh()
     {
-        button.interactable = controller.Session.CanConfirm;
-        switch (controller.Session.Phase)
-        {
-            case GamePhase.Planning:
-                label.sprite = planningSprite;
-                break;
-            case GamePhase.Report:
-                label.sprite = reportSprite;
-                break;
-            default:
-                label.sprite = endSprite;
-                break;
-        }
+        var session = controller.Session;
+        button.interactable = session.CanConfirm;
+        label.enabled = session.IsStarted;
+        label.sprite = session.Phase == GamePhase.Report ? reportSprite : planningSprite;
     }
 }

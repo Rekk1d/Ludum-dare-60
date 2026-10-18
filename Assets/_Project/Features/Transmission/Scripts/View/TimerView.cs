@@ -20,6 +20,17 @@ public class TimerView : MonoBehaviour
     private void Update()
     {
         var session = controller.Session;
+        if (!session.IsStarted)
+        {
+            if (_shown != int.MaxValue)
+            {
+                _shown = int.MaxValue;
+                text.text = string.Empty;
+            }
+
+            return;
+        }
+
         if (session.RoundIndex != _roundIndex)
         {
             _roundIndex = session.RoundIndex;

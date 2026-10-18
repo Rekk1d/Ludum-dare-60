@@ -13,6 +13,7 @@ public class LockButtonView : MonoBehaviour, IPointerDownHandler
     private void Start()
     {
         controller.Session.Changed += Refresh;
+        Refresh();
     }
 
     private void OnDestroy()

@@ -16,8 +16,10 @@ public class TerminalView : MonoBehaviour
     private Coroutine _typing;
     private bool _ordersAnnounced;
     private bool _introPending;
+    private bool _endPending;
 
     public event Action IntroPrinted;
+    public event Action EndPrinted;
 
     private void Start()
     {
@@ -57,6 +59,7 @@ public class TerminalView : MonoBehaviour
         Clear();
         _ordersAnnounced = false;
         _introPending = true;
+        _endPending = false;
         Print($"ROUND {session.RoundIndex + 1:00}/{session.RoundCount:00}");
         Print("INCOMING TRANSMISSION...");
         Print($"{session.Attacks.Count} SIGNALS RECEIVED");
@@ -127,15 +130,17 @@ public class TerminalView : MonoBehaviour
             case GamePhase.Won:
                 Print(session.TimedOut
                     ? $"{prefix}{damage}. SURVIVED"
-                    : $"{damage}. SURVIVED. STATION HP {session.Hp}/{session.MaxHp}");
+                    : $"{damage}. SURVIVED. BASE HP {session.Hp}/{session.MaxHp}");
                 break;
             case GamePhase.Lost:
-                Print($"{prefix}{damage}. STATION LOST");
+                Print($"{prefix}{damage}. BASE LOST");
                 break;
             default:
-                Print($"{prefix}{damage}. STATION HP {session.Hp}/{session.MaxHp}");
+                Print($"{prefix}{damage}. BASE HP {session.Hp}/{session.MaxHp}");
                 break;
         }
+
+        _endPending = session.Phase == GamePhase.Won || session.Phase == GamePhase.Lost;
     }
 
     private static string ReportLine(ReportEntry entry)
@@ -212,6 +217,12 @@ public class TerminalView : MonoBehaviour
         {
             _introPending = false;
             IntroPrinted?.Invoke();
+        }
+
+        if (_endPending)
+        {
+            _endPending = false;
+            EndPrinted?.Invoke();
         }
     }
 
