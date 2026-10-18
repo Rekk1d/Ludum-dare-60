@@ -49,13 +49,18 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
 
     public void Open(bool slideIn)
     {
-        gameObject.SetActive(true);
-        StartCoroutine(Play(slideIn));
+        Open(slideIn, true);
     }
 
-    public void Approve(int index, Action done)
+    public void Open(bool slideIn, bool typed)
     {
-        StartCoroutine(ApproveRoutine(index, done));
+        gameObject.SetActive(true);
+        StartCoroutine(Play(slideIn, typed));
+    }
+
+    public void Approve(int index, bool stamp, Action done)
+    {
+        StartCoroutine(ApproveRoutine(index, stamp, done));
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -69,17 +74,17 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
         OptionClicked?.Invoke(Array.IndexOf(options, option));
     }
 
-    private IEnumerator Play(bool slideIn)
+    private IEnumerator Play(bool slideIn, bool typed)
     {
-        _skip = false;
-        foreach (var text in typedTexts)
+        _skip = !typed;
+        for (var i = 0; i < typedTexts.Length; i++)
         {
-            text.maxVisibleCharacters = 0;
+            typedTexts[i].maxVisibleCharacters = typed ? 0 : _fullTexts[i].Length;
         }
 
         if (resultStamp != null)
         {
-            resultStamp.SetActive(false);
+            resultStamp.SetActive(!typed);
         }
 
         if (approvedStamp != null)
@@ -109,12 +114,11 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
 
         if (!_skip)
         {
-            yield return new WaitForSeconds(startDelay);
+            yield return new WaitForSecondsRealtime(startDelay);
         }
 
-        var delay = new WaitForSeconds(1f / charsPerSecond);
-        var pause = new WaitForSeconds(linePause);
-        var spaceDelay = new WaitForSeconds(1f / charsPerSecond + spacePause);
+        var charTime = 1f / charsPerSecond;
+        var spaceTime = charTime + spacePause;
         for (var i = 0; i < typedTexts.Length; i++)
         {
             var full = _fullTexts[i];
@@ -123,7 +127,7 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
                 typedTexts[i].maxVisibleCharacters = c + 1;
                 var character = full[c];
                 typing.Play(character);
-                yield return character == '\n' ? pause : character == ' ' ? spaceDelay : delay;
+                yield return new WaitForSecondsRealtime(character == '\n' ? linePause : character == ' ' ? spaceTime : charTime);
             }
 
             if (_skip)
@@ -132,14 +136,14 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
                 continue;
             }
 
-            yield return pause;
+            yield return new WaitForSecondsRealtime(linePause);
         }
 
-        if (resultStamp != null)
+        if (resultStamp != null && typed)
         {
             if (!_skip)
             {
-                yield return new WaitForSeconds(stampPause);
+                yield return new WaitForSecondsRealtime(stampPause);
             }
 
             resultStamp.SetActive(true);
@@ -158,7 +162,7 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    private IEnumerator ApproveRoutine(int index, Action done)
+    private IEnumerator ApproveRoutine(int index, bool stamp, Action done)
     {
         foreach (var option in options)
         {
@@ -166,12 +170,12 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
         }
 
         options[index].Choose();
-        yield return new WaitForSeconds(checkPause);
-        if (approvedStamp != null)
+        yield return new WaitForSecondsRealtime(checkPause);
+        if (stamp && approvedStamp != null)
         {
             approvedStamp.SetActive(true);
             yield return Shake();
-            yield return new WaitForSeconds(approvedPause);
+            yield return new WaitForSecondsRealtime(approvedPause);
         }
 
         yield return Slide(_restPosition, Offscreen(), true);
@@ -181,8 +185,8 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
 
     private IEnumerator Slide(Vector2 from, Vector2 to, bool accelerate)
     {
-        sound.PlayPaper();
-        for (var time = 0f; time < slideDuration; time += Time.deltaTime)
+        sound.PlayPaper(accelerate);
+        for (var time = 0f; time < slideDuration; time += Time.unscaledDeltaTime)
         {
             var t = time / slideDuration;
             t = accelerate ? t * t : 1f - (1f - t) * (1f - t);
@@ -197,11 +201,10 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
     private IEnumerator Shake()
     {
         sound.PlayStamp();
-        var step = new WaitForSeconds(shakeStep);
         paper.anchoredPosition = _restPosition + new Vector2(shakePixels, 0f);
-        yield return step;
+        yield return new WaitForSecondsRealtime(shakeStep);
         paper.anchoredPosition = _restPosition - new Vector2(shakePixels, 0f);
-        yield return step;
+        yield return new WaitForSecondsRealtime(shakeStep);
         paper.anchoredPosition = _restPosition;
     }
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class SoundPlayer : MonoBehaviour
@@ -9,12 +10,18 @@ public class SoundPlayer : MonoBehaviour
     [SerializeField] private AudioClip confirmClip;
     [SerializeField] private AudioClip lockClip;
     [SerializeField] private AudioClip smallClip;
-    [SerializeField] private AudioClip paperClip;
+    [SerializeField, FormerlySerializedAs("paperClip")] private AudioClip paperInClip;
+    [SerializeField] private AudioClip paperOutClip;
     [SerializeField] private AudioClip radarClip;
     [SerializeField] private AudioClip selectClip;
     [SerializeField] private AudioClip[] stampClips;
     [SerializeField, Range(0f, 1f)] private float stampVolume = 0.4f;
     [SerializeField, Range(0f, 1f)] private float radarVolume = 0.4f;
+
+    private void Awake()
+    {
+        source.ignoreListenerPause = true;
+    }
 
     private void Start()
     {
@@ -30,14 +37,19 @@ public class SoundPlayer : MonoBehaviour
         Play(lockClip, 1f);
     }
 
-    public void PlayPaper()
+    public void PlayPaper(bool outgoing)
     {
-        Play(paperClip, 1f);
+        Play(outgoing ? paperOutClip : paperInClip, 1f);
     }
 
     public void PlayRadar()
     {
         Play(radarClip, radarVolume);
+    }
+
+    public void PlaySmall()
+    {
+        Play(smallClip, 1f);
     }
 
     public void PlaySelect()
