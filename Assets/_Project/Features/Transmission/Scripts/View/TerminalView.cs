@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -14,6 +15,9 @@ public class TerminalView : MonoBehaviour
     private readonly List<string> _lines = new List<string>();
     private Coroutine _typing;
     private bool _ordersAnnounced;
+    private bool _introPending;
+
+    public event Action IntroPrinted;
 
     private void Start()
     {
@@ -23,6 +27,8 @@ public class TerminalView : MonoBehaviour
         session.RoundStarted += OnRoundStarted;
         session.TypeRevealed += OnTypeRevealed;
         session.RealityRevealed += OnRealityRevealed;
+        session.TargetsLocked += OnTargetsLocked;
+        session.TargetLost += OnTargetLost;
         session.RoundResolved += OnRoundResolved;
     }
 
@@ -38,6 +44,8 @@ public class TerminalView : MonoBehaviour
         session.RoundStarted -= OnRoundStarted;
         session.TypeRevealed -= OnTypeRevealed;
         session.RealityRevealed -= OnRealityRevealed;
+        session.TargetsLocked -= OnTargetsLocked;
+        session.TargetLost -= OnTargetLost;
         session.RoundResolved -= OnRoundResolved;
     }
 
@@ -46,6 +54,7 @@ public class TerminalView : MonoBehaviour
         var session = controller.Session;
         Clear();
         _ordersAnnounced = false;
+        _introPending = true;
         Print($"ROUND {session.RoundIndex + 1:00}/{session.RoundCount:00}");
         Print("INCOMING TRANSMISSION...");
         Print($"{session.Attacks.Count} SIGNALS RECEIVED");
@@ -55,7 +64,7 @@ public class TerminalView : MonoBehaviour
     private void OnChanged()
     {
         var session = controller.Session;
-        if (_ordersAnnounced || session.Phase != GamePhase.Planning || !session.CanConfirm)
+        if (_ordersAnnounced || session.Phase != GamePhase.Planning || !session.ClockRunning || !session.CanConfirm)
         {
             return;
         }
@@ -74,6 +83,19 @@ public class TerminalView : MonoBehaviour
         Print($"DECODING {Name(attack)}... {(attack.IsReal ? "REAL THREAT" : "FALSE ALARM")}");
     }
 
+    private void OnTargetsLocked(IReadOnlyList<Attack> attacks)
+    {
+        foreach (var attack in attacks)
+        {
+            Print($"{Name(attack)} LOCKED");
+        }
+    }
+
+    private void OnTargetLost(Attack attack)
+    {
+        Print($"{Name(attack)} LOST - NO DATA");
+    }
+
     private void OnRoundResolved()
     {
         var session = controller.Session;
@@ -83,17 +105,20 @@ public class TerminalView : MonoBehaviour
             Print(ReportLine(entry));
         }
 
+        var prefix = session.TimedOut ? "TIME OUT. " : string.Empty;
         var damage = session.LastDamage > 0 ? $"DAMAGE -{session.LastDamage}" : "NO DAMAGE";
         switch (session.Phase)
         {
             case GamePhase.Won:
-                Print($"{damage}. SURVIVED. STATION HP {session.Hp}/{session.MaxHp}");
+                Print(session.TimedOut
+                    ? $"{prefix}{damage}. SURVIVED"
+                    : $"{damage}. SURVIVED. STATION HP {session.Hp}/{session.MaxHp}");
                 break;
             case GamePhase.Lost:
-                Print($"{damage}. STATION LOST");
+                Print($"{prefix}{damage}. STATION LOST");
                 break;
             default:
-                Print($"{damage}. STATION HP {session.Hp}/{session.MaxHp}");
+                Print($"{prefix}{damage}. STATION HP {session.Hp}/{session.MaxHp}");
                 break;
         }
     }
@@ -168,6 +193,11 @@ public class TerminalView : MonoBehaviour
         }
 
         _typing = null;
+        if (_introPending)
+        {
+            _introPending = false;
+            IntroPrinted?.Invoke();
+        }
     }
 
     private static string Name(Attack attack)

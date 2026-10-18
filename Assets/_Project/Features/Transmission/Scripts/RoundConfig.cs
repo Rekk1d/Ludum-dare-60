@@ -14,6 +14,13 @@ public class RoundConfig
     [SerializeField, Min(0f)] private float weightPower3 = 40f;
     [SerializeField] private bool revealTypes;
     [SerializeField] private bool realityEnabled = true;
+    [SerializeField, Min(0f)] private float timerSeconds = 90f;
+    [SerializeField, Min(0f)] private float sweepSpeed = 90f;
+    [SerializeField, Min(0f)] private float targetSpeedMin = 0.01f;
+    [SerializeField, Min(0f)] private float targetSpeedMax = 0.02f;
+    [SerializeField, Range(0f, 1f)] private float spawnDistanceMin = 0.6f;
+    [SerializeField, Range(0f, 1f)] private float spawnDistanceMax = 0.9f;
+    [SerializeField, Min(0f)] private float spawnDelayMax = 10f;
 
     public int SignalCount => signalCount;
     public int DecryptCount => decryptCount;
@@ -25,6 +32,13 @@ public class RoundConfig
     public float WeightPower3 => weightPower3;
     public bool RevealTypes => revealTypes;
     public bool RealityEnabled => realityEnabled;
+    public float TimerSeconds => timerSeconds;
+    public float SweepSpeed => sweepSpeed;
+    public float TargetSpeedMin => targetSpeedMin;
+    public float TargetSpeedMax => targetSpeedMax;
+    public float SpawnDistanceMin => spawnDistanceMin;
+    public float SpawnDistanceMax => spawnDistanceMax;
+    public float SpawnDelayMax => spawnDelayMax;
 
     public RoundConfig()
     {

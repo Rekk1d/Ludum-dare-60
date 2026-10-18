@@ -51,13 +51,14 @@ public class SectorRowView : MonoBehaviour
             return;
         }
 
-        var canDecrypt = planning && session.DecryptsLeft > 0;
+        var lost = planning && attack.Lost;
+        var canDecrypt = session.IsActive && session.DecryptsLeft > 0 && attack.Locked;
         threatLamps.SetState(3, attack.Power);
-        typeSlot.SetState(attack.TypeRevealed || !planning, canDecrypt, attack.Type == AttackType.Air ? "AIR" : "GROUND");
+        typeSlot.SetState(attack.TypeRevealed || !planning || lost, canDecrypt, lost ? "NO DATA" : attack.Type == AttackType.Air ? "AIR" : "GROUND");
 
         if (session.RealityEnabled)
         {
-            realitySlot.SetState(attack.RealityRevealed || !planning, canDecrypt, attack.IsReal ? "REAL" : "FAKE");
+            realitySlot.SetState(attack.RealityRevealed || !planning || lost, canDecrypt, lost ? "NO DATA" : attack.IsReal ? "REAL" : "FAKE");
         }
         else
         {
@@ -65,7 +66,7 @@ public class SectorRowView : MonoBehaviour
         }
 
         var current = session.GetDefense(sector);
-        var canOrder = planning && (current != DefenseType.None || session.OrdersLeft > 0);
+        var canOrder = session.IsActive && (current != DefenseType.None || session.OrdersLeft > 0);
         foreach (var defenseButton in defenseButtons)
         {
             var selected = current == defenseButton.Type;

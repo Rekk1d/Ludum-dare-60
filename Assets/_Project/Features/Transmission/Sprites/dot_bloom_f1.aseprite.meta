@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 25b382344466cc7469e93c4606f590db
+guid: fba24ff52a5c5b441b369ce946a8dfae
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -125,7 +125,7 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: blip_f1
+  - name: dot_bloom_f1
     originalName: 
     pivot: {x: 0.5, y: 0}
     alignment: 9
@@ -137,7 +137,7 @@ ScriptedImporter:
       y: 4
       width: 9
       height: 9
-    spriteID: 746b67b7475ef96458aadb90afc82387
+    spriteID: aae0c3da065dc7f4ebac21c33d3448f5
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -151,17 +151,17 @@ ScriptedImporter:
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 557413563
+      value0: 3872561643
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: blip_f1
+    name: dot_bloom_f1
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: blip_f1
+    - name: dot_bloom_f1
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -169,7 +169,7 @@ ScriptedImporter:
         y: 0
         width: 9
         height: 9
-      spriteId: 746b67b7475ef96458aadb90afc82387
+      spriteId: aae0c3da065dc7f4ebac21c33d3448f5
     linkedCells: []
     tileCells: []
     tileSetIndex: 0

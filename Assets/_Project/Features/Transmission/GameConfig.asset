@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameConfig
   startHp: 10
   maxUniversalPerRound: 1
+  lostRadius: 0.336
+  lockWindow: 13
+  angleSpread: 25
   rounds:
   - signalCount: 3
     decryptCount: 3
@@ -25,6 +28,13 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 0
+    timerSeconds: 0
+    sweepSpeed: 45
+    targetSpeedMin: 0
+    targetSpeedMax: 0
+    spawnDistanceMin: 0.5
+    spawnDistanceMax: 0.85
+    spawnDelayMax: 0
   - signalCount: 4
     decryptCount: 4
     orderCount: 3
@@ -35,6 +45,13 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 1
     realityEnabled: 1
+    timerSeconds: 90
+    sweepSpeed: 45
+    targetSpeedMin: 0.01
+    targetSpeedMax: 0.02
+    spawnDistanceMin: 0.6
+    spawnDistanceMax: 0.9
+    spawnDelayMax: 10
   - signalCount: 4
     decryptCount: 4
     orderCount: 2
@@ -45,6 +62,13 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
+    timerSeconds: 90
+    sweepSpeed: 45
+    targetSpeedMin: 0.01
+    targetSpeedMax: 0.02
+    spawnDistanceMin: 0.6
+    spawnDistanceMax: 0.9
+    spawnDelayMax: 10
   - signalCount: 4
     decryptCount: 4
     orderCount: 2
@@ -55,6 +79,13 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
+    timerSeconds: 90
+    sweepSpeed: 45
+    targetSpeedMin: 0.01
+    targetSpeedMax: 0.02
+    spawnDistanceMin: 0.6
+    spawnDistanceMax: 0.9
+    spawnDelayMax: 10
   - signalCount: 4
     decryptCount: 4
     orderCount: 2
@@ -65,6 +96,13 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
+    timerSeconds: 90
+    sweepSpeed: 45
+    targetSpeedMin: 0.01
+    targetSpeedMax: 0.02
+    spawnDistanceMin: 0.6
+    spawnDistanceMax: 0.9
+    spawnDelayMax: 10
   - signalCount: 4
     decryptCount: 4
     orderCount: 2
@@ -75,6 +113,13 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
+    timerSeconds: 90
+    sweepSpeed: 45
+    targetSpeedMin: 0.01
+    targetSpeedMax: 0.02
+    spawnDistanceMin: 0.6
+    spawnDistanceMax: 0.9
+    spawnDelayMax: 10
   - signalCount: 4
     decryptCount: 4
     orderCount: 2
@@ -85,6 +130,13 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
+    timerSeconds: 90
+    sweepSpeed: 45
+    targetSpeedMin: 0.01
+    targetSpeedMax: 0.02
+    spawnDistanceMin: 0.6
+    spawnDistanceMax: 0.9
+    spawnDelayMax: 10
   - signalCount: 4
     decryptCount: 4
     orderCount: 2
@@ -95,6 +147,13 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
+    timerSeconds: 90
+    sweepSpeed: 45
+    targetSpeedMin: 0.01
+    targetSpeedMax: 0.02
+    spawnDistanceMin: 0.6
+    spawnDistanceMax: 0.9
+    spawnDelayMax: 10
   - signalCount: 4
     decryptCount: 4
     orderCount: 2
@@ -105,6 +164,13 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
+    timerSeconds: 90
+    sweepSpeed: 45
+    targetSpeedMin: 0.01
+    targetSpeedMax: 0.02
+    spawnDistanceMin: 0.6
+    spawnDistanceMax: 0.9
+    spawnDelayMax: 10
   - signalCount: 4
     decryptCount: 4
     orderCount: 2
@@ -115,3 +181,10 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
+    timerSeconds: 90
+    sweepSpeed: 45
+    targetSpeedMin: 0.01
+    targetSpeedMax: 0.02
+    spawnDistanceMin: 0.6
+    spawnDistanceMax: 0.9
+    spawnDelayMax: 10

@@ -6,6 +6,9 @@ public class GameConfig : ScriptableObject
 {
     [SerializeField, Min(1)] private int startHp = 10;
     [SerializeField, Range(0, 4)] private int maxUniversalPerRound = 1;
+    [SerializeField, Range(0f, 1f)] private float lostRadius = 0.336f;
+    [SerializeField, Range(0f, 90f)] private float lockWindow = 15f;
+    [SerializeField, Range(0f, 45f)] private float angleSpread = 25f;
     [SerializeField] private List<RoundConfig> rounds = new List<RoundConfig>
     {
         new RoundConfig(3, 3, 3, 0, 0, 30f, 30f, 40f, realityEnabled: false),
@@ -19,5 +22,8 @@ public class GameConfig : ScriptableObject
 
     public int StartHp => startHp;
     public int MaxUniversalPerRound => maxUniversalPerRound;
+    public float LostRadius => lostRadius;
+    public float LockWindow => lockWindow;
+    public float AngleSpread => angleSpread;
     public IReadOnlyList<RoundConfig> Rounds => rounds;
 }

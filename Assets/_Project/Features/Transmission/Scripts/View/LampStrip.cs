@@ -22,7 +22,6 @@ public class LampStrip : MonoBehaviour
         Build();
         for (var i = 0; i < _lamps.Count; i++)
         {
-            _lamps[i].gameObject.SetActive(i < visible);
             _lamps[i].sprite = i < lit ? onSprite : offSprite;
         }
     }

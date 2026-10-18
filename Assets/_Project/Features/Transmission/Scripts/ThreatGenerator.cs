@@ -10,7 +10,7 @@ public class ThreatGenerator
         _random = random;
     }
 
-    public List<Attack> Generate(RoundConfig round)
+    public List<Attack> Generate(RoundConfig round, float angleSpread)
     {
         var sectors = new List<Sector>((Sector[])Enum.GetValues(typeof(Sector)));
         Shuffle(sectors);
@@ -23,7 +23,11 @@ public class ThreatGenerator
         for (var i = 0; i < count; i++)
         {
             var type = _random.Next(2) == 0 ? AttackType.Air : AttackType.Ground;
-            attacks.Add(new Attack(sectors[i], type, RollPower(round), i >= fakes));
+            var angle = (SectorAngle(sectors[i]) + Range(-angleSpread, angleSpread) + 360f) % 360f;
+            var distance = Range(round.SpawnDistanceMin, round.SpawnDistanceMax);
+            var speed = Range(round.TargetSpeedMin, round.TargetSpeedMax);
+            var delay = Range(0f, round.SpawnDelayMax);
+            attacks.Add(new Attack(sectors[i], type, RollPower(round), i >= fakes, angle, distance, speed, delay));
         }
 
         attacks.Sort((a, b) => a.Sector.CompareTo(b.Sector));
@@ -52,12 +56,34 @@ public class ThreatGenerator
         return 3;
     }
 
+    private float Range(float a, float b)
+    {
+        var min = Math.Min(a, b);
+        var max = Math.Max(a, b);
+        return min + (float)_random.NextDouble() * (max - min);
+    }
+
     private void Shuffle(List<Sector> list)
     {
         for (var i = list.Count - 1; i > 0; i--)
         {
             var j = _random.Next(i + 1);
             (list[i], list[j]) = (list[j], list[i]);
+        }
+    }
+
+    private static float SectorAngle(Sector sector)
+    {
+        switch (sector)
+        {
+            case Sector.North:
+                return 0f;
+            case Sector.East:
+                return 90f;
+            case Sector.South:
+                return 180f;
+            default:
+                return 270f;
         }
     }
 }
