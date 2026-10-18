@@ -85,3 +85,33 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
+  - signalCount: 4
+    decryptCount: 4
+    orderCount: 2
+    minFakes: 1
+    maxFakes: 2
+    weightPower1: 30
+    weightPower2: 30
+    weightPower3: 40
+    revealTypes: 0
+    realityEnabled: 1
+  - signalCount: 4
+    decryptCount: 4
+    orderCount: 2
+    minFakes: 1
+    maxFakes: 2
+    weightPower1: 30
+    weightPower2: 30
+    weightPower3: 40
+    revealTypes: 0
+    realityEnabled: 1
+  - signalCount: 4
+    decryptCount: 4
+    orderCount: 2
+    minFakes: 1
+    maxFakes: 2
+    weightPower1: 30
+    weightPower2: 30
+    weightPower3: 40
+    revealTypes: 0
+    realityEnabled: 1

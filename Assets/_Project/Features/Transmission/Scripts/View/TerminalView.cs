@@ -1,0 +1,182 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+public class TerminalView : MonoBehaviour
+{
+    [SerializeField] private GameController controller;
+    [SerializeField] private TMP_Text text;
+    [SerializeField, Min(1)] private int maxLines = 5;
+    [SerializeField, Min(1f)] private float charsPerSecond = 60f;
+
+    private readonly Queue<string> _pending = new Queue<string>();
+    private readonly List<string> _lines = new List<string>();
+    private Coroutine _typing;
+    private bool _ordersAnnounced;
+
+    private void Start()
+    {
+        text.text = string.Empty;
+        var session = controller.Session;
+        session.Changed += OnChanged;
+        session.RoundStarted += OnRoundStarted;
+        session.TypeRevealed += OnTypeRevealed;
+        session.RealityRevealed += OnRealityRevealed;
+        session.RoundResolved += OnRoundResolved;
+    }
+
+    private void OnDestroy()
+    {
+        if (controller == null || controller.Session == null)
+        {
+            return;
+        }
+
+        var session = controller.Session;
+        session.Changed -= OnChanged;
+        session.RoundStarted -= OnRoundStarted;
+        session.TypeRevealed -= OnTypeRevealed;
+        session.RealityRevealed -= OnRealityRevealed;
+        session.RoundResolved -= OnRoundResolved;
+    }
+
+    private void OnRoundStarted()
+    {
+        var session = controller.Session;
+        Clear();
+        _ordersAnnounced = false;
+        Print($"ROUND {session.RoundIndex + 1:00}/{session.RoundCount:00}");
+        Print("INCOMING TRANSMISSION...");
+        Print($"{session.Attacks.Count} SIGNALS RECEIVED");
+        Print("AWAITING ORDERS");
+    }
+
+    private void OnChanged()
+    {
+        var session = controller.Session;
+        if (_ordersAnnounced || session.Phase != GamePhase.Planning || !session.CanConfirm)
+        {
+            return;
+        }
+
+        _ordersAnnounced = true;
+        Print("ORDERS SET. AWAITING CONFIRM");
+    }
+
+    private void OnTypeRevealed(Attack attack)
+    {
+        Print($"DECODING {Name(attack)}... {TypeName(attack)}");
+    }
+
+    private void OnRealityRevealed(Attack attack)
+    {
+        Print($"DECODING {Name(attack)}... {(attack.IsReal ? "REAL THREAT" : "FALSE ALARM")}");
+    }
+
+    private void OnRoundResolved()
+    {
+        var session = controller.Session;
+        Clear();
+        foreach (var entry in session.LastReport)
+        {
+            Print(ReportLine(entry));
+        }
+
+        var damage = session.LastDamage > 0 ? $"DAMAGE -{session.LastDamage}" : "NO DAMAGE";
+        switch (session.Phase)
+        {
+            case GamePhase.Won:
+                Print($"{damage}. SURVIVED. STATION HP {session.Hp}/{session.MaxHp}");
+                break;
+            case GamePhase.Lost:
+                Print($"{damage}. STATION LOST");
+                break;
+            default:
+                Print($"{damage}. STATION HP {session.Hp}/{session.MaxHp}");
+                break;
+        }
+    }
+
+    private static string ReportLine(ReportEntry entry)
+    {
+        var attack = entry.Attack;
+        if (!attack.IsReal)
+        {
+            return entry.Defense == DefenseType.None
+                ? $"{Name(attack)} FALSE ALARM"
+                : $"{Name(attack)} FALSE ALARM. ORDER WASTED";
+        }
+
+        var prefix = $"{Name(attack)} {TypeName(attack)}";
+        if (entry.Damage == 0)
+        {
+            return $"{prefix} BLOCKED";
+        }
+
+        switch (entry.Defense)
+        {
+            case DefenseType.None:
+                return $"{prefix} HIT -{entry.Damage} NO DEFENSE";
+            case DefenseType.Universal:
+                return $"{prefix} HIT -{entry.Damage} HALVED";
+            default:
+                return $"{prefix} HIT -{entry.Damage} WRONG DEFENSE";
+        }
+    }
+
+    private void Print(string line)
+    {
+        _pending.Enqueue("> " + line);
+        if (_typing == null)
+        {
+            _typing = StartCoroutine(Type());
+        }
+    }
+
+    private void Clear()
+    {
+        if (_typing != null)
+        {
+            StopCoroutine(_typing);
+            _typing = null;
+        }
+
+        _pending.Clear();
+        _lines.Clear();
+        text.text = string.Empty;
+    }
+
+    private IEnumerator Type()
+    {
+        var delay = new WaitForSeconds(1f / charsPerSecond);
+        while (_pending.Count > 0)
+        {
+            var line = _pending.Dequeue();
+            _lines.Add(string.Empty);
+            if (_lines.Count > maxLines)
+            {
+                _lines.RemoveAt(0);
+            }
+
+            for (var i = 1; i <= line.Length; i++)
+            {
+                _lines[_lines.Count - 1] = line.Substring(0, i);
+                text.text = string.Join("\n", _lines);
+                yield return delay;
+            }
+        }
+
+        _typing = null;
+    }
+
+    private static string Name(Attack attack)
+    {
+        return attack.Sector.ToString().ToUpperInvariant();
+    }
+
+    private static string TypeName(Attack attack)
+    {
+        return attack.Type == AttackType.Air ? "AIR" : "GROUND";
+    }
+}

@@ -7,11 +7,11 @@ public class PixelCanvasScaler : MonoBehaviour
     [SerializeField, Min(1)] private int referenceWidth = 480;
     [SerializeField, Min(1)] private int referenceHeight = 270;
 
-    private CanvasScaler scaler;
+    private CanvasScaler _scaler;
 
     private void Awake()
     {
-        scaler = GetComponent<CanvasScaler>();
+        _scaler = GetComponent<CanvasScaler>();
         Apply();
     }
 
@@ -23,9 +23,9 @@ public class PixelCanvasScaler : MonoBehaviour
     private void Apply()
     {
         var scale = Mathf.Max(1, Mathf.Min(Screen.width / referenceWidth, Screen.height / referenceHeight));
-        if (!Mathf.Approximately(scaler.scaleFactor, scale))
+        if (!Mathf.Approximately(_scaler.scaleFactor, scale))
         {
-            scaler.scaleFactor = scale;
+            _scaler.scaleFactor = scale;
         }
     }
 }

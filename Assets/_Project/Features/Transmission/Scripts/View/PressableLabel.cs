@@ -8,49 +8,49 @@ public class PressableLabel : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     [SerializeField] private RectTransform label;
     [SerializeField] private float pressedOffset = 3f;
 
-    private Vector2 restPosition;
-    private bool down;
-    private bool inside;
+    private Vector2 _restPosition;
+    private bool _down;
+    private bool _inside;
 
     private void Awake()
     {
-        restPosition = label.anchoredPosition;
+        _restPosition = label.anchoredPosition;
     }
 
     private void OnDisable()
     {
-        down = false;
-        inside = false;
+        _down = false;
+        _inside = false;
         Apply();
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        down = true;
+        _down = true;
         Apply();
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        down = false;
+        _down = false;
         Apply();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        inside = true;
+        _inside = true;
         Apply();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        inside = false;
+        _inside = false;
         Apply();
     }
 
     private void Apply()
     {
-        var pressed = down && inside && button.interactable;
-        label.anchoredPosition = restPosition + (pressed ? new Vector2(0f, -pressedOffset) : Vector2.zero);
+        var pressed = _down && _inside && button.interactable;
+        label.anchoredPosition = _restPosition + (pressed ? new Vector2(0f, -pressedOffset) : Vector2.zero);
     }
 }

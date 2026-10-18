@@ -19,25 +19,25 @@ public class RadarView : MonoBehaviour
     [SerializeField] private float blinkInterval = 0.4f;
     [SerializeField] private Color fakeColor = new Color(1f, 1f, 1f, 0.35f);
 
-    private readonly List<Image> blips = new List<Image>();
-    private readonly List<float> blipAngles = new List<float>();
-    private readonly List<bool> blipDetected = new List<bool>();
-    private Texture2D texture;
-    private Color32[] pixels;
-    private float[] pixelAngles;
-    private float angle;
+    private readonly List<Image> _blips = new List<Image>();
+    private readonly List<float> _blipAngles = new List<float>();
+    private readonly List<bool> _blipDetected = new List<bool>();
+    private Texture2D _texture;
+    private Color32[] _pixels;
+    private float[] _pixelAngles;
+    private float _angle;
 
-    public float SweepAngle => angle;
+    public float SweepAngle => _angle;
 
     private void Awake()
     {
-        texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+        _texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
         {
             filterMode = FilterMode.Point,
             wrapMode = TextureWrapMode.Clamp
         };
-        pixels = new Color32[size * size];
-        pixelAngles = new float[size * size];
+        _pixels = new Color32[size * size];
+        _pixelAngles = new float[size * size];
         var center = (size - 1) / 2f;
         var radius = size / 2f;
         for (var y = 0; y < size; y++)
@@ -46,13 +46,13 @@ public class RadarView : MonoBehaviour
             {
                 var dx = x - center;
                 var dy = y - center;
-                pixelAngles[y * size + x] = dx * dx + dy * dy <= radius * radius
+                _pixelAngles[y * size + x] = dx * dx + dy * dy <= radius * radius
                     ? (Mathf.Atan2(dx, dy) * Mathf.Rad2Deg + 360f) % 360f
                     : -1f;
             }
         }
 
-        sweepImage.texture = texture;
+        sweepImage.texture = _texture;
         blipTemplate.gameObject.SetActive(false);
     }
 
@@ -71,8 +71,8 @@ public class RadarView : MonoBehaviour
 
     private void Update()
     {
-        var previous = angle;
-        angle = (angle + sweepSpeed * Time.deltaTime) % 360f;
+        var previous = _angle;
+        _angle = (_angle + sweepSpeed * Time.deltaTime) % 360f;
         DrawSweep();
         UpdateBlips(previous);
     }
@@ -80,41 +80,41 @@ public class RadarView : MonoBehaviour
     private void DrawSweep()
     {
         var bright = (Color32)sweepColor;
-        for (var i = 0; i < pixels.Length; i++)
+        for (var i = 0; i < _pixels.Length; i++)
         {
-            var pixelAngle = pixelAngles[i];
+            var pixelAngle = _pixelAngles[i];
             if (pixelAngle < 0f)
             {
-                pixels[i] = default;
+                _pixels[i] = default;
                 continue;
             }
 
-            var behind = (angle - pixelAngle + 360f) % 360f;
+            var behind = (_angle - pixelAngle + 360f) % 360f;
             if (behind > trailDegrees)
             {
-                pixels[i] = default;
+                _pixels[i] = default;
                 continue;
             }
 
             var step = Mathf.Min(2, (int)(behind / trailDegrees * 3f));
             var alpha = step == 0 ? 200 : step == 1 ? 110 : 50;
-            pixels[i] = new Color32(bright.r, bright.g, bright.b, (byte)alpha);
+            _pixels[i] = new Color32(bright.r, bright.g, bright.b, (byte)alpha);
         }
 
-        texture.SetPixels32(pixels);
-        texture.Apply(false);
+        _texture.SetPixels32(_pixels);
+        _texture.Apply(false);
     }
 
     private void OnRoundStarted()
     {
-        foreach (var blip in blips)
+        foreach (var blip in _blips)
         {
             Destroy(blip.gameObject);
         }
 
-        blips.Clear();
-        blipAngles.Clear();
-        blipDetected.Clear();
+        _blips.Clear();
+        _blipAngles.Clear();
+        _blipDetected.Clear();
 
         var radius = size / 2f;
         foreach (var attack in controller.Session.Attacks)
@@ -125,9 +125,9 @@ public class RadarView : MonoBehaviour
             var blip = Instantiate(blipTemplate, blipTemplate.transform.parent);
             blip.rectTransform.anchoredPosition = new Vector2(Mathf.Round(Mathf.Sin(radians) * distance), Mathf.Round(Mathf.Cos(radians) * distance));
             blip.gameObject.SetActive(false);
-            blips.Add(blip);
-            blipAngles.Add(blipAngle);
-            blipDetected.Add(false);
+            _blips.Add(blip);
+            _blipAngles.Add(blipAngle);
+            _blipDetected.Add(false);
         }
     }
 
@@ -135,18 +135,18 @@ public class RadarView : MonoBehaviour
     {
         var session = controller.Session;
         var frame = (int)(Time.time / blinkInterval) % 2 == 0 ? blipFrame1 : blipFrame2;
-        for (var i = 0; i < blips.Count && i < session.Attacks.Count; i++)
+        for (var i = 0; i < _blips.Count && i < session.Attacks.Count; i++)
         {
-            if (!blipDetected[i] && Passed(previous, angle, blipAngles[i]))
+            if (!_blipDetected[i] && Passed(previous, _angle, _blipAngles[i]))
             {
-                blipDetected[i] = true;
+                _blipDetected[i] = true;
             }
 
             var attack = session.Attacks[i];
             var showFake = !attack.IsReal && (attack.RealityRevealed || session.Phase != GamePhase.Planning);
-            blips[i].gameObject.SetActive(blipDetected[i]);
-            blips[i].sprite = frame;
-            blips[i].color = showFake ? fakeColor : Color.white;
+            _blips[i].gameObject.SetActive(_blipDetected[i]);
+            _blips[i].sprite = frame;
+            _blips[i].color = showFake ? fakeColor : Color.white;
         }
     }
 

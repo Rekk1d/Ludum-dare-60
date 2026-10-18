@@ -8,17 +8,17 @@ public class DebugGameView : MonoBehaviour
     [SerializeField] private GameConfig config;
     [SerializeField, Min(0.5f)] private float uiScale = 2f;
 
-    private GameSession session;
+    private GameSession _session;
 
     private void Start()
     {
-        session = new GameSession(config, new System.Random());
-        session.StartGame();
+        _session = new GameSession(config, new System.Random());
+        _session.StartGame();
     }
 
     private void OnGUI()
     {
-        if (session == null)
+        if (_session == null)
         {
             return;
         }
@@ -26,7 +26,7 @@ public class DebugGameView : MonoBehaviour
         GUI.matrix = Matrix4x4.Scale(new Vector3(uiScale, uiScale, 1f));
         GUILayout.BeginArea(new Rect(10f, 10f, Screen.width / uiScale - 20f, Screen.height / uiScale - 20f));
 
-        GUILayout.Label($"Round {session.RoundIndex + 1}/{session.RoundCount}   HP {session.Hp}   Decrypts {session.DecryptsLeft}   Orders {session.OrdersLeft}   Universal {session.UniversalLeft}");
+        GUILayout.Label($"Round {_session.RoundIndex + 1}/{_session.RoundCount}   HP {_session.Hp}   Decrypts {_session.DecryptsLeft}   Orders {_session.OrdersLeft}   Universal {_session.UniversalLeft}");
         GUILayout.Space(10f);
 
         foreach (Sector sector in Enum.GetValues(typeof(Sector)))
@@ -54,7 +54,7 @@ public class DebugGameView : MonoBehaviour
             return;
         }
 
-        var planning = session.Phase == GamePhase.Planning;
+        var planning = _session.Phase == GamePhase.Planning;
 
         GUILayout.Label($"Power {attack.Power}", GUILayout.Width(70f));
 
@@ -64,10 +64,10 @@ public class DebugGameView : MonoBehaviour
         }
         else if (GUILayout.Button("Type ?", GUILayout.Width(80f)))
         {
-            session.TryRevealType(attack);
+            _session.TryRevealType(attack);
         }
 
-        if (session.RealityEnabled)
+        if (_session.RealityEnabled)
         {
             if (attack.RealityRevealed || !planning)
             {
@@ -75,17 +75,17 @@ public class DebugGameView : MonoBehaviour
             }
             else if (GUILayout.Button("Real ?", GUILayout.Width(80f)))
             {
-                session.TryRevealReality(attack);
+                _session.TryRevealReality(attack);
             }
         }
 
-        var current = (int)session.GetDefense(sector);
+        var current = (int)_session.GetDefense(sector);
         if (planning)
         {
             var selected = GUILayout.Toolbar(current, DefenseLabels, GUILayout.Width(320f));
             if (selected != current)
             {
-                session.TrySetDefense(sector, (DefenseType)selected);
+                _session.TrySetDefense(sector, (DefenseType)selected);
             }
         }
         else
@@ -99,28 +99,28 @@ public class DebugGameView : MonoBehaviour
 
     private void DrawPhase()
     {
-        switch (session.Phase)
+        switch (_session.Phase)
         {
             case GamePhase.Planning:
                 if (GUILayout.Button("Confirm orders", GUILayout.Width(160f)))
                 {
-                    session.ConfirmOrders();
+                    _session.ConfirmOrders();
                 }
                 break;
             case GamePhase.Report:
-                GUILayout.Label($"Damage taken: {session.LastDamage}");
+                GUILayout.Label($"Damage taken: {_session.LastDamage}");
                 if (GUILayout.Button("Next round", GUILayout.Width(160f)))
                 {
-                    session.NextRound();
+                    _session.NextRound();
                 }
                 break;
             case GamePhase.Won:
             case GamePhase.Lost:
-                GUILayout.Label($"Damage taken: {session.LastDamage}");
-                GUILayout.Label(session.Phase == GamePhase.Won ? "STATION SURVIVED" : "STATION LOST");
+                GUILayout.Label($"Damage taken: {_session.LastDamage}");
+                GUILayout.Label(_session.Phase == GamePhase.Won ? "STATION SURVIVED" : "STATION LOST");
                 if (GUILayout.Button("Restart", GUILayout.Width(160f)))
                 {
-                    session.StartGame();
+                    _session.StartGame();
                 }
                 break;
         }
@@ -128,7 +128,7 @@ public class DebugGameView : MonoBehaviour
 
     private int FindDamage(Attack attack)
     {
-        foreach (var entry in session.LastReport)
+        foreach (var entry in _session.LastReport)
         {
             if (entry.Attack == attack)
             {
@@ -141,7 +141,7 @@ public class DebugGameView : MonoBehaviour
 
     private Attack FindAttack(Sector sector)
     {
-        foreach (var attack in session.Attacks)
+        foreach (var attack in _session.Attacks)
         {
             if (attack.Sector == sector)
             {

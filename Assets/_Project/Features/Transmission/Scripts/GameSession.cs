@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 public class GameSession
 {
-    private readonly GameConfig config;
-    private readonly ThreatGenerator generator;
-    private readonly Dictionary<Sector, DefenseType> orders = new Dictionary<Sector, DefenseType>();
-    private readonly List<ReportEntry> lastReport = new List<ReportEntry>();
-    private List<Attack> attacks = new List<Attack>();
-    private RoundConfig currentRound;
+    private readonly GameConfig _config;
+    private readonly ThreatGenerator _generator;
+    private readonly Dictionary<Sector, DefenseType> _orders = new Dictionary<Sector, DefenseType>();
+    private readonly List<ReportEntry> _lastReport = new List<ReportEntry>();
+    private List<Attack> _attacks = new List<Attack>();
+    private RoundConfig _currentRound;
 
     public event Action Changed;
     public event Action RoundStarted;
@@ -17,37 +17,37 @@ public class GameSession
     public event Action RoundResolved;
 
     public int Hp { get; private set; }
-    public int MaxHp => config.StartHp;
+    public int MaxHp => _config.StartHp;
     public int RoundIndex { get; private set; }
-    public int RoundCount => config.Rounds.Count;
+    public int RoundCount => _config.Rounds.Count;
     public int DecryptsLeft { get; private set; }
-    public int DecryptTotal => currentRound.DecryptCount;
-    public int OrdersLeft => currentRound.OrderCount - orders.Count;
-    public int OrdersTotal => currentRound.OrderCount;
-    public bool RealityEnabled => currentRound.RealityEnabled;
-    public int UniversalLeft => config.MaxUniversalPerRound - CountOrders(DefenseType.Universal);
-    public bool CanConfirm => Phase != GamePhase.Planning || OrdersLeft <= 0 || orders.Count >= attacks.Count;
+    public int DecryptTotal => _currentRound.DecryptCount;
+    public int OrdersLeft => _currentRound.OrderCount - _orders.Count;
+    public int OrdersTotal => _currentRound.OrderCount;
+    public bool RealityEnabled => _currentRound.RealityEnabled;
+    public int UniversalLeft => _config.MaxUniversalPerRound - CountOrders(DefenseType.Universal);
+    public bool CanConfirm => Phase != GamePhase.Planning || OrdersLeft <= 0 || _orders.Count >= _attacks.Count;
     public int LastDamage { get; private set; }
     public GamePhase Phase { get; private set; }
-    public IReadOnlyList<Attack> Attacks => attacks;
-    public IReadOnlyList<ReportEntry> LastReport => lastReport;
+    public IReadOnlyList<Attack> Attacks => _attacks;
+    public IReadOnlyList<ReportEntry> LastReport => _lastReport;
 
     public GameSession(GameConfig config, Random random)
     {
-        this.config = config;
-        generator = new ThreatGenerator(random);
+        _config = config;
+        _generator = new ThreatGenerator(random);
     }
 
     public void StartGame()
     {
-        Hp = config.StartHp;
+        Hp = _config.StartHp;
         RoundIndex = 0;
         BeginRound();
     }
 
     public DefenseType GetDefense(Sector sector)
     {
-        return orders.TryGetValue(sector, out var defense) ? defense : DefenseType.None;
+        return _orders.TryGetValue(sector, out var defense) ? defense : DefenseType.None;
     }
 
     public bool TryRevealType(Attack attack)
@@ -87,7 +87,7 @@ public class GameSession
 
         if (defense == DefenseType.None)
         {
-            if (orders.Remove(sector))
+            if (_orders.Remove(sector))
             {
                 Changed?.Invoke();
             }
@@ -95,7 +95,7 @@ public class GameSession
             return true;
         }
 
-        if (!orders.ContainsKey(sector) && OrdersLeft <= 0)
+        if (!_orders.ContainsKey(sector) && OrdersLeft <= 0)
         {
             return false;
         }
@@ -105,7 +105,7 @@ public class GameSession
             return false;
         }
 
-        orders[sector] = defense;
+        _orders[sector] = defense;
         Changed?.Invoke();
         return true;
     }
@@ -117,13 +117,13 @@ public class GameSession
             return;
         }
 
-        lastReport.Clear();
+        _lastReport.Clear();
         LastDamage = 0;
-        foreach (var attack in attacks)
+        foreach (var attack in _attacks)
         {
             var defense = GetDefense(attack.Sector);
             var damage = DamageCalculator.Calculate(attack, defense);
-            lastReport.Add(new ReportEntry(attack, defense, damage));
+            _lastReport.Add(new ReportEntry(attack, defense, damage));
             LastDamage += damage;
         }
 
@@ -165,7 +165,7 @@ public class GameSession
     private int CountOrders(DefenseType defense)
     {
         var count = 0;
-        foreach (var value in orders.Values)
+        foreach (var value in _orders.Values)
         {
             if (value == defense)
             {
@@ -178,18 +178,18 @@ public class GameSession
 
     private void BeginRound()
     {
-        currentRound = config.Rounds[RoundIndex];
-        attacks = generator.Generate(currentRound);
-        foreach (var attack in attacks)
+        _currentRound = _config.Rounds[RoundIndex];
+        _attacks = _generator.Generate(_currentRound);
+        foreach (var attack in _attacks)
         {
-            if (currentRound.RevealTypes)
+            if (_currentRound.RevealTypes)
             {
                 attack.RevealType();
             }
         }
 
-        DecryptsLeft = currentRound.DecryptCount;
-        orders.Clear();
+        DecryptsLeft = _currentRound.DecryptCount;
+        _orders.Clear();
         Phase = GamePhase.Planning;
         RoundStarted?.Invoke();
         Changed?.Invoke();

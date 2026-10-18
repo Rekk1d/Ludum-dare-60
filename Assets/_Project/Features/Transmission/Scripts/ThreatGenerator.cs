@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 public class ThreatGenerator
 {
-    private readonly Random random;
+    private readonly Random _random;
 
     public ThreatGenerator(Random random)
     {
-        this.random = random;
+        _random = random;
     }
 
     public List<Attack> Generate(RoundConfig round)
@@ -17,12 +17,12 @@ public class ThreatGenerator
 
         var count = Math.Min(round.SignalCount, sectors.Count);
         var maxFakes = Math.Max(round.MinFakes, round.MaxFakes);
-        var fakes = round.RealityEnabled ? Math.Min(count, random.Next(round.MinFakes, maxFakes + 1)) : 0;
+        var fakes = round.RealityEnabled ? Math.Min(count, _random.Next(round.MinFakes, maxFakes + 1)) : 0;
 
         var attacks = new List<Attack>(count);
         for (var i = 0; i < count; i++)
         {
-            var type = random.Next(2) == 0 ? AttackType.Air : AttackType.Ground;
+            var type = _random.Next(2) == 0 ? AttackType.Air : AttackType.Ground;
             attacks.Add(new Attack(sectors[i], type, RollPower(round), i >= fakes));
         }
 
@@ -38,7 +38,7 @@ public class ThreatGenerator
             return 1;
         }
 
-        var roll = random.NextDouble() * total;
+        var roll = _random.NextDouble() * total;
         if (roll < round.WeightPower1)
         {
             return 1;
@@ -56,7 +56,7 @@ public class ThreatGenerator
     {
         for (var i = list.Count - 1; i > 0; i--)
         {
-            var j = random.Next(i + 1);
+            var j = _random.Next(i + 1);
             (list[i], list[j]) = (list[j], list[i]);
         }
     }
