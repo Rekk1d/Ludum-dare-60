@@ -25,6 +25,7 @@ public class GameSession
     public event Action RoundResolved;
 
     public bool IsStarted { get; private set; }
+    public bool IsReplay => _replay;
     public int Hp { get; private set; }
     public int MaxHp => _config.StartHp;
     public int RoundIndex { get; private set; }

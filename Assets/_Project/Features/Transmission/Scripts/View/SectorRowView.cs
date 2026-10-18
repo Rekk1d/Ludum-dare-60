@@ -11,6 +11,20 @@ public class SectorRowView : MonoBehaviour
     [SerializeField] private DecodeSlot realitySlot;
     [SerializeField] private DefenseButton[] defenseButtons;
 
+    public Sector Sector => sector;
+    public RectTransform TypeSlotRect => (RectTransform)typeSlot.transform;
+
+    public RectTransform[] DefenseRects()
+    {
+        var rects = new RectTransform[defenseButtons.Length];
+        for (var i = 0; i < defenseButtons.Length; i++)
+        {
+            rects[i] = (RectTransform)defenseButtons[i].transform;
+        }
+
+        return rects;
+    }
+
     private void Start()
     {
         nameText.text = sector.ToString().ToUpperInvariant();

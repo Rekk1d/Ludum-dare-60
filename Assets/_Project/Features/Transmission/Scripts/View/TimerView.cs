@@ -38,7 +38,7 @@ public class TimerView : MonoBehaviour
             _reveals[1] = Random.Range(secondRevealRange.x, secondRevealRange.y) * session.TimerTotal;
         }
 
-        if (session.TimerScrambled && !Revealed(session))
+        if (session.TimerScrambled && session.ClockRunning && !Revealed(session))
         {
             Scramble();
             return;

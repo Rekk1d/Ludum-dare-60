@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class TerminalView : MonoBehaviour
+public class TerminalView : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private GameController controller;
     [SerializeField] private TMP_Text text;
@@ -17,9 +18,21 @@ public class TerminalView : MonoBehaviour
     private bool _ordersAnnounced;
     private bool _introPending;
     private bool _endPending;
+    private bool _skip;
+    private bool _skipped;
+
+    public bool LastSkipped { get; private set; }
 
     public event Action IntroPrinted;
     public event Action EndPrinted;
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (_typing != null)
+        {
+            _skip = true;
+        }
+    }
 
     private void Start()
     {
@@ -60,7 +73,7 @@ public class TerminalView : MonoBehaviour
         _ordersAnnounced = false;
         _introPending = true;
         _endPending = false;
-        Print($"ROUND {session.RoundIndex + 1:00}/{session.RoundCount:00}");
+        Print($"WAVE {session.RoundIndex + 1:00}/{session.RoundCount:00}");
         Print("INCOMING TRANSMISSION...");
         Print($"{session.Attacks.Count} SIGNALS RECEIVED");
         if (session.TimerScrambled)
@@ -187,6 +200,7 @@ public class TerminalView : MonoBehaviour
             _typing = null;
         }
 
+        _skip = false;
         _pending.Clear();
         _lines.Clear();
         text.text = string.Empty;
@@ -195,6 +209,7 @@ public class TerminalView : MonoBehaviour
     private IEnumerator Type()
     {
         var delay = new WaitForSeconds(1f / charsPerSecond);
+        _skipped = false;
         while (_pending.Count > 0)
         {
             var line = _pending.Dequeue();
@@ -206,12 +221,23 @@ public class TerminalView : MonoBehaviour
 
             for (var i = 1; i <= line.Length; i++)
             {
+                if (_skip)
+                {
+                    _skipped = true;
+                    i = line.Length;
+                }
+
                 _lines[_lines.Count - 1] = line.Substring(0, i);
                 text.text = string.Join("\n", _lines);
-                yield return delay;
+                if (!_skip)
+                {
+                    yield return delay;
+                }
             }
         }
 
+        LastSkipped = _skipped;
+        _skip = false;
         _typing = null;
         if (_introPending)
         {

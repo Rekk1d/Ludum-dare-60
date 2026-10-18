@@ -10,6 +10,7 @@ public class MenuController : MonoBehaviour
     [SerializeField] private MenuSheet mainSheet;
     [SerializeField] private MenuSheet lostSheet;
     [SerializeField] private MenuSheet wonSheet;
+    [SerializeField] private MenuSheet manualSheet;
     [SerializeField] private GameObject radarGlassOff;
     [SerializeField] private GameObject[] poweredLabels;
     [SerializeField, Min(0f)] private float endDelay = 1f;
@@ -19,10 +20,12 @@ public class MenuController : MonoBehaviour
         mainSheet.OptionClicked += index => OnOptionClicked(mainSheet, index, false);
         lostSheet.OptionClicked += index => OnOptionClicked(lostSheet, index, true);
         wonSheet.OptionClicked += index => OnOptionClicked(wonSheet, index, true);
+        manualSheet.OptionClicked += OnManualClicked;
         terminal.EndPrinted += OnEndPrinted;
         SetPowered(false);
         lostSheet.gameObject.SetActive(false);
         wonSheet.gameObject.SetActive(false);
+        manualSheet.gameObject.SetActive(false);
         mainSheet.Open(false);
     }
 
@@ -44,8 +47,24 @@ public class MenuController : MonoBehaviour
         sheet.Approve(index, () =>
         {
             SetPowered(true);
-            controller.StartGame(replay);
+            if (!replay)
+            {
+                manualSheet.Open(true);
+                return;
+            }
+
+            controller.StartGame(true);
         });
+    }
+
+    private void OnManualClicked(int index)
+    {
+        if (index != ProceedOption)
+        {
+            return;
+        }
+
+        manualSheet.Approve(index, () => controller.StartGame(false));
     }
 
     private void SetPowered(bool powered)

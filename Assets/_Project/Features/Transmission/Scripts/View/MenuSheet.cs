@@ -78,7 +78,11 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
             resultStamp.SetActive(false);
         }
 
-        approvedStamp.SetActive(false);
+        if (approvedStamp != null)
+        {
+            approvedStamp.SetActive(false);
+        }
+
         foreach (var item in shownWithOptions)
         {
             item.SetActive(false);
@@ -156,9 +160,13 @@ public class MenuSheet : MonoBehaviour, IPointerClickHandler
 
         options[index].Choose();
         yield return new WaitForSeconds(checkPause);
-        approvedStamp.SetActive(true);
-        yield return Shake();
-        yield return new WaitForSeconds(approvedPause);
+        if (approvedStamp != null)
+        {
+            approvedStamp.SetActive(true);
+            yield return Shake();
+            yield return new WaitForSeconds(approvedPause);
+        }
+
         yield return Slide(_restPosition, Offscreen(), true);
         done?.Invoke();
         gameObject.SetActive(false);

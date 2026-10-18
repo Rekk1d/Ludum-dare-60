@@ -6,6 +6,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameConfig config;
     [SerializeField] private Button confirmButton;
     [SerializeField] private TerminalView terminal;
+    [SerializeField] private TutorialController tutorial;
 
     public GameSession Session { get; private set; }
 
@@ -36,6 +37,12 @@ public class GameController : MonoBehaviour
 
     private void OnIntroPrinted()
     {
+        if (tutorial != null)
+        {
+            tutorial.BeforeClock(Session.StartClock);
+            return;
+        }
+
         Session.StartClock();
     }
 
