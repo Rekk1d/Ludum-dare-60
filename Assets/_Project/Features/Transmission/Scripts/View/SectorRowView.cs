@@ -87,7 +87,7 @@ public class SectorRowView : MonoBehaviour
 
         if (session.RealityEnabled)
         {
-            realitySlot.SetState(attack.RealityRevealed || !planning || lost, canDecrypt, lost ? "NO DATA" : attack.IsReal ? "REAL" : "FAKE");
+            realitySlot.SetState(attack.RealityRevealed || !planning || lost, canDecrypt, lost ? "NO DATA" : attack.IsReal ? "BANDIT" : "FALSE");
         }
         else
         {

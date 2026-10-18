@@ -7,10 +7,13 @@ using UnityEngine.EventSystems;
 
 public class TerminalView : MonoBehaviour, IPointerClickHandler
 {
+    private const string GarbleChars = "#%?*/0";
+
     [SerializeField] private GameController controller;
     [SerializeField] private TMP_Text text;
     [SerializeField, Min(1)] private int maxLines = 5;
     [SerializeField, Min(1f)] private float charsPerSecond = 60f;
+    [SerializeField, Range(0f, 1f)] private float garbleChance = 0.25f;
 
     private readonly Queue<string> _pending = new Queue<string>();
     private readonly List<string> _lines = new List<string>();
@@ -80,6 +83,10 @@ public class TerminalView : MonoBehaviour, IPointerClickHandler
         {
             Print("EMP DETECTED. CLOCK FAILURE");
         }
+        else if (session.Ghosts.Count > 0)
+        {
+            Print("RADAR INTERFERENCE DETECTED");
+        }
 
         Print("AWAITING ORDERS");
     }
@@ -103,7 +110,7 @@ public class TerminalView : MonoBehaviour, IPointerClickHandler
 
     private void OnRealityRevealed(Attack attack)
     {
-        Print($"DECODING {Name(attack)}... {(attack.IsReal ? "REAL THREAT" : "FALSE ALARM")}");
+        Print($"DECODING {Name(attack)}... {(attack.IsReal ? "BANDIT" : "FALSE ALARM")}");
     }
 
     private void OnTargetsLocked(IReadOnlyList<Attack> attacks)
@@ -185,11 +192,27 @@ public class TerminalView : MonoBehaviour, IPointerClickHandler
 
     private void Print(string line)
     {
-        _pending.Enqueue("> " + line);
+        var session = controller.Session;
+        var garbled = session.TimerScrambled && session.ClockRunning;
+        _pending.Enqueue("> " + (garbled ? Garble(line) : line));
         if (_typing == null)
         {
             _typing = StartCoroutine(Type());
         }
+    }
+
+    private string Garble(string line)
+    {
+        var chars = line.ToCharArray();
+        for (var i = 0; i < chars.Length; i++)
+        {
+            if (chars[i] != ' ' && UnityEngine.Random.value < garbleChance)
+            {
+                chars[i] = GarbleChars[UnityEngine.Random.Range(0, GarbleChars.Length)];
+            }
+        }
+
+        return new string(chars);
     }
 
     private void Clear()

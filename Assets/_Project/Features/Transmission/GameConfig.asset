@@ -68,7 +68,7 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
-    timerSeconds: 90
+    timerSeconds: 60
     sweepSpeed: 60
     targetSpeedMin: 0.01
     targetSpeedMax: 0.02
@@ -87,7 +87,7 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
-    timerSeconds: 90
+    timerSeconds: 60
     sweepSpeed: 60
     targetSpeedMin: 0.01
     targetSpeedMax: 0.02
@@ -106,7 +106,7 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
-    timerSeconds: 90
+    timerSeconds: 60
     sweepSpeed: 60
     targetSpeedMin: 0.01
     targetSpeedMax: 0.02
@@ -125,7 +125,7 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 0
-    timerSeconds: 60
+    timerSeconds: 45
     sweepSpeed: 60
     targetSpeedMin: 0.01
     targetSpeedMax: 0.02
@@ -144,14 +144,14 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
-    timerSeconds: 90
+    timerSeconds: 60
     sweepSpeed: 60
     targetSpeedMin: 0.01
     targetSpeedMax: 0.02
     spawnDistanceMin: 0.6
     spawnDistanceMax: 0.9
     spawnDelayMax: 10
-    ghostCount: 0
+    ghostCount: 2
     scrambledTimer: 0
   - signalCount: 4
     decryptCount: 4
@@ -163,14 +163,14 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
-    timerSeconds: 90
+    timerSeconds: 60
     sweepSpeed: 60
     targetSpeedMin: 0.01
     targetSpeedMax: 0.02
     spawnDistanceMin: 0.6
     spawnDistanceMax: 0.9
     spawnDelayMax: 10
-    ghostCount: 0
+    ghostCount: 2
     scrambledTimer: 0
   - signalCount: 4
     decryptCount: 4
@@ -182,14 +182,14 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
-    timerSeconds: 90
+    timerSeconds: 60
     sweepSpeed: 60
     targetSpeedMin: 0.01
     targetSpeedMax: 0.02
     spawnDistanceMin: 0.6
     spawnDistanceMax: 0.9
     spawnDelayMax: 10
-    ghostCount: 0
+    ghostCount: 3
     scrambledTimer: 0
   - signalCount: 4
     decryptCount: 4
@@ -201,14 +201,14 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
-    timerSeconds: 90
+    timerSeconds: 60
     sweepSpeed: 60
     targetSpeedMin: 0.01
     targetSpeedMax: 0.02
     spawnDistanceMin: 0.6
     spawnDistanceMax: 0.9
     spawnDelayMax: 10
-    ghostCount: 0
+    ghostCount: 3
     scrambledTimer: 0
   replayRounds:
   - signalCount: 4
@@ -221,7 +221,7 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 1
     realityEnabled: 1
-    timerSeconds: 90
+    timerSeconds: 60
     sweepSpeed: 60
     targetSpeedMin: 0.01
     targetSpeedMax: 0.02
@@ -240,7 +240,7 @@ MonoBehaviour:
     weightPower3: 40
     revealTypes: 0
     realityEnabled: 1
-    timerSeconds: 90
+    timerSeconds: 60
     sweepSpeed: 60
     targetSpeedMin: 0.01
     targetSpeedMax: 0.02

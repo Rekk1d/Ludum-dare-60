@@ -16,6 +16,8 @@ public class TutorialController : MonoBehaviour
 
     private GameSession Session => controller.Session;
 
+    public bool TimerHidden { get; private set; }
+
     private void Start()
     {
         view.NextClicked += OnNext;
@@ -65,12 +67,22 @@ public class TutorialController : MonoBehaviour
             _running = null;
         }
 
+        TimerHidden = false;
         view.Hide();
     }
 
     private IEnumerator RunRound(int round, Action startClock)
     {
         var delayed = false;
+        TimerHidden = false;
+        foreach (var tip in tips)
+        {
+            if (tip.Round == round && tip.BeforeClock && tip.RevealsTimer)
+            {
+                TimerHidden = true;
+            }
+        }
+
         for (var i = 0; i < tips.Length; i++)
         {
             if (tips[i].Round == round && tips[i].BeforeClock)
@@ -81,10 +93,16 @@ public class TutorialController : MonoBehaviour
                     yield return new WaitForSeconds(terminal.LastSkipped ? 0f : tipDelay);
                 }
 
+                if (tips[i].RevealsTimer)
+                {
+                    TimerHidden = false;
+                }
+
                 yield return Show(i);
             }
         }
 
+        TimerHidden = false;
         startClock();
         for (var i = 0; i < tips.Length; i++)
         {

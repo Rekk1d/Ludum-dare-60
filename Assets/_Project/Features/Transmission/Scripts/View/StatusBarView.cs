@@ -8,6 +8,7 @@ public class StatusBarView : MonoBehaviour
     [SerializeField] private TMP_Text roundText;
     [SerializeField] private LampStrip decryptLamps;
     [SerializeField] private LampStrip orderLamps;
+    [SerializeField, Min(1)] private int brokenFromWave = 3;
 
     private void Start()
     {
@@ -28,16 +29,17 @@ public class StatusBarView : MonoBehaviour
         var session = controller.Session;
         if (!session.IsStarted)
         {
-            hpLamps.SetState(0, 0);
+            hpLamps.SetState(hpLamps.Capacity, 0);
             roundText.text = string.Empty;
-            decryptLamps.SetState(0, 0);
-            orderLamps.SetState(0, 0);
+            decryptLamps.SetState(decryptLamps.Capacity, 0);
+            orderLamps.SetState(orderLamps.Capacity, 0);
             return;
         }
 
         hpLamps.SetState(session.MaxHp, session.Hp);
         roundText.text = (session.RoundIndex + 1).ToString("00");
-        decryptLamps.SetState(session.DecryptTotal, session.DecryptsLeft);
-        orderLamps.SetState(session.OrdersTotal, session.OrdersLeft);
+        var broken = session.RoundIndex + 1 >= brokenFromWave;
+        decryptLamps.SetState(broken ? session.DecryptTotal : decryptLamps.Capacity, session.DecryptsLeft);
+        orderLamps.SetState(broken ? session.OrdersTotal : orderLamps.Capacity, session.OrdersLeft);
     }
 }

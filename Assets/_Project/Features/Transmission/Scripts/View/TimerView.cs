@@ -6,6 +6,8 @@ public class TimerView : MonoBehaviour
     private const string ScrambleChars = "0123456789-?";
 
     [SerializeField] private GameController controller;
+    [SerializeField] private TerminalView terminal;
+    [SerializeField] private TutorialController tutorial;
     [SerializeField] private TMP_Text text;
     [SerializeField, Min(0.01f)] private float scrambleInterval = 0.08f;
     [SerializeField, Min(0f)] private float revealDuration = 1f;
@@ -16,6 +18,36 @@ public class TimerView : MonoBehaviour
     private int _roundIndex = -1;
     private int _shown = int.MinValue;
     private float _nextScramble;
+    private bool _armed;
+
+    private void Start()
+    {
+        terminal.IntroPrinted += OnIntroPrinted;
+        controller.Session.RoundStarted += OnRoundStarted;
+    }
+
+    private void OnDestroy()
+    {
+        if (terminal != null)
+        {
+            terminal.IntroPrinted -= OnIntroPrinted;
+        }
+
+        if (controller != null && controller.Session != null)
+        {
+            controller.Session.RoundStarted -= OnRoundStarted;
+        }
+    }
+
+    private void OnIntroPrinted()
+    {
+        _armed = true;
+    }
+
+    private void OnRoundStarted()
+    {
+        _armed = false;
+    }
 
     private void Update()
     {
@@ -38,13 +70,15 @@ public class TimerView : MonoBehaviour
             _reveals[1] = Random.Range(secondRevealRange.x, secondRevealRange.y) * session.TimerTotal;
         }
 
-        if (session.TimerScrambled && session.ClockRunning && !Revealed(session))
+        if (session.TimerScrambled && _armed && session.Phase == GamePhase.Planning && !Revealed(session))
         {
             Scramble();
             return;
         }
 
-        var seconds = session.HasTimer ? Mathf.CeilToInt(session.TimeLeft) : -1;
+        var hidden = tutorial != null && tutorial.TimerHidden;
+        var known = (_armed && !hidden) || session.Phase != GamePhase.Planning;
+        var seconds = session.HasTimer && known ? Mathf.CeilToInt(session.TimeLeft) : -1;
         if (seconds == _shown)
         {
             return;

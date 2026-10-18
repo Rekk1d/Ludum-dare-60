@@ -1511,6 +1511,9 @@ MonoBehaviour:
   spacing: 2
   onSprite: {fileID: 2896494363725843112, guid: 305e270cbf29fe64a9a22001d48a46bc, type: 3}
   offSprite: {fileID: 1222319606770699358, guid: 2c8d20cf427df9f4ebbbc1d991ce9c3d, type: 3}
+  deadSprite: {fileID: 0}
+  blinkCount: 3
+  blinkInterval: 0.1
 --- !u!1 &235597901
 GameObject:
   m_ObjectHideFlags: 0
@@ -2953,6 +2956,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimerView
   controller: {fileID: 470283026}
+  terminal: {fileID: 2130747672}
+  tutorial: {fileID: 1981443274}
   text: {fileID: 406240962}
   scrambleInterval: 0.08
   revealDuration: 1
@@ -3315,6 +3320,7 @@ MonoBehaviour:
   roundText: {fileID: 905518969}
   decryptLamps: {fileID: 1005797340}
   orderLamps: {fileID: 1557887937}
+  brokenFromWave: 3
 --- !u!1 &475619382
 GameObject:
   m_ObjectHideFlags: 0
@@ -8184,6 +8190,9 @@ MonoBehaviour:
   spacing: 4
   onSprite: {fileID: 6945307331679337904, guid: 288f35b7d821c9b4a8f27e0928b6796d, type: 3}
   offSprite: {fileID: -6114688774645943718, guid: 62179d2fd7469814b82df86b4ad92801, type: 3}
+  deadSprite: {fileID: -4524114869693670558, guid: 5094679f573236b478f1dac0c60244e9, type: 3}
+  blinkCount: 0
+  blinkInterval: 0.1
 --- !u!1 &1009641519
 GameObject:
   m_ObjectHideFlags: 0
@@ -12734,6 +12743,9 @@ MonoBehaviour:
   spacing: 4
   onSprite: {fileID: 1963654351086310535, guid: 309fbfff5692f5a48a7077b438a3fb78, type: 3}
   offSprite: {fileID: 347287600808980096, guid: 953187cc1a984bb479d42c60b3a9100c, type: 3}
+  deadSprite: {fileID: 6183548165037285764, guid: 4bce711664ae92d4383d8905647a5e4a, type: 3}
+  blinkCount: 0
+  blinkInterval: 0.1
 --- !u!1 &1588001854
 GameObject:
   m_ObjectHideFlags: 0
@@ -15703,6 +15715,7 @@ MonoBehaviour:
     targets:
     - {fileID: 1327358963}
     top: 0
+    revealsTimer: 0
   - round: 0
     beforeClock: 0
     title: THREAT TABLE
@@ -15717,6 +15730,7 @@ MonoBehaviour:
     targets:
     - {fileID: 356317055}
     top: 0
+    revealsTimer: 0
   - round: 0
     beforeClock: 0
     title: DECODE THE TYPE
@@ -15730,6 +15744,7 @@ MonoBehaviour:
     highlight: 2
     targets: []
     top: 0
+    revealsTimer: 0
   - round: 0
     beforeClock: 0
     title: LIMITED DECODES
@@ -15744,6 +15759,7 @@ MonoBehaviour:
     targets:
     - {fileID: 1842179575}
     top: 0
+    revealsTimer: 0
   - round: 0
     beforeClock: 0
     title: ASSIGN DEFENSE
@@ -15759,6 +15775,7 @@ MonoBehaviour:
     highlight: 3
     targets: []
     top: 0
+    revealsTimer: 0
   - round: 0
     beforeClock: 0
     title: LIMITED ORDERS
@@ -15773,6 +15790,7 @@ MonoBehaviour:
     targets:
     - {fileID: 565985790}
     top: 0
+    revealsTimer: 0
   - round: 0
     beforeClock: 0
     title: TERMINAL
@@ -15787,6 +15805,7 @@ MonoBehaviour:
     targets:
     - {fileID: 1888832983}
     top: 1
+    revealsTimer: 0
   - round: 0
     beforeClock: 0
     title: BASE HP
@@ -15801,6 +15820,7 @@ MonoBehaviour:
     targets:
     - {fileID: 1060697664}
     top: 0
+    revealsTimer: 0
   - round: 0
     beforeClock: 0
     title: PRESS CONFIRM
@@ -15812,15 +15832,16 @@ MonoBehaviour:
     targets:
     - {fileID: 829977647}
     top: 0
+    revealsTimer: 0
   - round: 1
     beforeClock: 1
     title: FALSE ALARMS
-    body: 'SOME SIGNALS ARE FAKE: NO DAMAGE.
+    body: 'SOME SIGNALS ARE FALSE: NO DAMAGE.
 
       DECODE VALID TO CHECK A THREAT.
 
       AN
-      ORDER ON A FAKE IS WASTED.
+      ORDER ON A FALSE ALARM IS WASTED.
 
       TYPES ARE DECODED THIS WAVE.'
     goal: 0
@@ -15832,6 +15853,7 @@ MonoBehaviour:
     - {fileID: 367557199}
     - {fileID: 148434800}
     top: 0
+    revealsTimer: 0
   - round: 1
     beforeClock: 1
     title: MOVING TARGETS
@@ -15846,6 +15868,7 @@ MonoBehaviour:
     targets:
     - {fileID: 107077892}
     top: 0
+    revealsTimer: 0
   - round: 1
     beforeClock: 1
     title: TIME
@@ -15860,34 +15883,90 @@ MonoBehaviour:
     targets:
     - {fileID: 1783942458}
     top: 0
+    revealsTimer: 1
   - round: 2
     beforeClock: 1
-    title: LAST LINE
-    body: 'FROM NOW ON, ORDERS ARE TOO FEW
+    title: CREWS LOST
+    body: 'TWO DEFENSE CREWS WERE LOST.
 
-      TO COVER EVERY SECTOR.
+      FROM NOW ON, ONLY 2 ORDERS A WAVE.
 
-      CHOOSE
-      WHAT TO LET GO.'
+      YOU
+      CANNOT COVER EVERY SECTOR.
+
+      CHOOSE WHAT TO LET GO.'
     goal: 0
-    highlight: 0
-    targets: []
+    highlight: 1
+    targets:
+    - {fileID: 565985790}
     top: 0
+    revealsTimer: 0
   - round: 5
     beforeClock: 1
     title: 'COMMAND: EMP STRIKE'
     body: 'ENEMY EMP DETONATED OVER
 
-      YOUR SECTOR. LOCKING A FALSE
+      YOUR SECTOR. THIS CONSOLE IS
 
-      ECHO
-      DISABLES LOCK.
+      TOO
+      OLD TO HAVE EMP SHIELDING.
 
-      CLOCK DAMAGED. ALL SIGNALS REAL.'
+      EXPECT SYSTEM FAILURES.'
     goal: 0
     highlight: 0
     targets: []
     top: 0
+    revealsTimer: 0
+  - round: 5
+    beforeClock: 1
+    title: EMP DAMAGE
+    body: 'THE RADAR SHOWS FALSE ECHOES.
+
+      LOCKING ONE DISABLES LOCK.
+
+      CLOCK
+      DAMAGED. TIME IS SHORT.
+
+      VALIDATION OFFLINE: ALL REAL.'
+    goal: 0
+    highlight: 0
+    targets: []
+    top: 0
+    revealsTimer: 0
+  - round: 5
+    beforeClock: 1
+    title: POWER SURGE
+    body: 'OLD TECH, STRANGE LUCK:
+
+      THE SURGE REVIVED TWO DEFENSE
+
+      CREWS.
+      4 ORDERS THIS WAVE.
+
+      BUT ONE DECODER BURNED OUT.'
+    goal: 0
+    highlight: 1
+    targets:
+    - {fileID: 1842179575}
+    - {fileID: 565985790}
+    top: 0
+    revealsTimer: 0
+  - round: 6
+    beforeClock: 1
+    title: CLOCK RESTORED
+    body: 'THE CLOCK IS WORKING AGAIN.
+
+      THE RADAR IS STILL DAMAGED:
+
+      FALSE
+      ECHOES MAY APPEAR.
+
+      SURGE OVER: 2 ORDERS, 4 DECODES.'
+    goal: 0
+    highlight: 0
+    targets: []
+    top: 0
+    revealsTimer: 0
   tipDelay: 2
 --- !u!114 &1981443275
 MonoBehaviour:
@@ -16685,6 +16764,7 @@ MonoBehaviour:
   text: {fileID: 2130747670}
   maxLines: 5
   charsPerSecond: 20
+  garbleChance: 0.25
 --- !u!1001 &622478084299800777
 PrefabInstance:
   m_ObjectHideFlags: 0
