@@ -666,7 +666,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 4, y: -13}
+  m_AnchoredPosition: {x: 0, y: -11}
   m_SizeDelta: {x: 67, y: 12}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &315759019
@@ -1009,6 +1009,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TimerView
   controller: {fileID: 470283026}
   text: {fileID: 406240962}
+  scrambleInterval: 0.08
+  revealDuration: 1
+  firstRevealRange: {x: 0.1, y: 0.33}
+  secondRevealRange: {x: 0.67, y: 0.9}
 --- !u!1 &470283024
 GameObject:
   m_ObjectHideFlags: 0
@@ -1771,7 +1775,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 268, y: -213}
+  m_AnchoredPosition: {x: 275, y: -213}
   m_SizeDelta: {x: 36, y: 9}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &693047905
@@ -2186,8 +2190,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 393, y: -213}
-  m_SizeDelta: {x: 75, y: 41}
+  m_AnchoredPosition: {x: 401, y: -215}
+  m_SizeDelta: {x: 67, y: 37}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &829977648
 MonoBehaviour:
@@ -2550,8 +2554,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 160, y: -213}
-  m_SizeDelta: {x: 27, y: 9}
+  m_AnchoredPosition: {x: 163, y: -213}
+  m_SizeDelta: {x: 20, y: 9}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &903018413
 MonoBehaviour:
@@ -2573,7 +2577,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TIMER
+  m_text: TIME
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4c83ea852bb2a754aa3a93b5247df2bd, type: 2}
   m_sharedMaterial: {fileID: 1874523047}
@@ -4067,7 +4071,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 267, y: -231}
-  m_SizeDelta: {x: 38, y: 10}
+  m_SizeDelta: {x: 52, y: 10}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1557887937
 MonoBehaviour:
@@ -4082,7 +4086,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LampStrip
   template: {fileID: 1469789154}
-  capacity: 3
+  capacity: 4
   spacing: 4
   onSprite: {fileID: 1963654351086310535, guid: 309fbfff5692f5a48a7077b438a3fb78, type: 3}
   offSprite: {fileID: 347287600808980096, guid: 953187cc1a984bb479d42c60b3a9100c, type: 3}

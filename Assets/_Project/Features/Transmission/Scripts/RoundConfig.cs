@@ -21,6 +21,8 @@ public class RoundConfig
     [SerializeField, Range(0f, 1f)] private float spawnDistanceMin = 0.6f;
     [SerializeField, Range(0f, 1f)] private float spawnDistanceMax = 0.9f;
     [SerializeField, Min(0f)] private float spawnDelayMax = 10f;
+    [SerializeField, Range(0, 8)] private int ghostCount;
+    [SerializeField] private bool scrambledTimer;
 
     public int SignalCount => signalCount;
     public int DecryptCount => decryptCount;
@@ -39,6 +41,8 @@ public class RoundConfig
     public float SpawnDistanceMin => spawnDistanceMin;
     public float SpawnDistanceMax => spawnDistanceMax;
     public float SpawnDelayMax => spawnDelayMax;
+    public int GhostCount => ghostCount;
+    public bool ScrambledTimer => scrambledTimer;
 
     public RoundConfig()
     {

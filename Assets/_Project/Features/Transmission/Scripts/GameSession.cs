@@ -9,14 +9,17 @@ public class GameSession
     private readonly List<ReportEntry> _lastReport = new List<ReportEntry>();
     private readonly List<Attack> _justLocked = new List<Attack>();
     private List<Attack> _attacks = new List<Attack>();
+    private List<Ghost> _ghosts = new List<Ghost>();
     private RoundConfig _currentRound;
     private float _elapsed;
+    private float _lockBlockedUntil;
 
     public event Action Changed;
     public event Action RoundStarted;
     public event Action<Attack> TypeRevealed;
     public event Action<Attack> RealityRevealed;
     public event Action<IReadOnlyList<Attack>> TargetsLocked;
+    public event Action<int> GhostsRemoved;
     public event Action<Attack> TargetLost;
     public event Action RoundResolved;
 
@@ -33,8 +36,11 @@ public class GameSession
     public bool ClockRunning { get; private set; }
     public bool IsActive => Phase == GamePhase.Planning && ClockRunning;
     public bool CanConfirm => Phase != GamePhase.Planning || (ClockRunning && (OrdersLeft <= 0 || _orders.Count >= _attacks.Count));
-    public bool CanLock => IsActive && _attacks.Exists(IsLockable);
+    public bool LockBlocked => _elapsed < _lockBlockedUntil;
+    public bool CanLock => IsActive && !LockBlocked && (_attacks.Exists(attack => !attack.Locked && !attack.Lost) || _ghosts.Exists(ghost => !ghost.Gone));
     public bool HasTimer => _currentRound != null && _currentRound.TimerSeconds > 0f;
+    public bool TimerScrambled => _currentRound != null && _currentRound.ScrambledTimer;
+    public float TimerTotal => _currentRound != null ? _currentRound.TimerSeconds : 0f;
     public float TimeLeft { get; private set; }
     public bool TimedOut { get; private set; }
     public float SweepAngle { get; private set; }
@@ -43,6 +49,7 @@ public class GameSession
     public int LastDamage { get; private set; }
     public GamePhase Phase { get; private set; }
     public IReadOnlyList<Attack> Attacks => _attacks;
+    public IReadOnlyList<Ghost> Ghosts => _ghosts;
     public IReadOnlyList<ReportEntry> LastReport => _lastReport;
 
     public GameSession(GameConfig config, Random random)
@@ -82,6 +89,7 @@ public class GameSession
             return;
         }
 
+        var wasBlocked = LockBlocked;
         _elapsed += deltaTime;
         var changed = false;
         foreach (var attack in _attacks)
@@ -111,6 +119,37 @@ public class GameSession
             }
         }
 
+        foreach (var ghost in _ghosts)
+        {
+            if (ghost.Gone)
+            {
+                continue;
+            }
+
+            if (!ghost.Spawned)
+            {
+                if (_elapsed < ghost.SpawnDelay)
+                {
+                    continue;
+                }
+
+                ghost.Spawn();
+                changed = true;
+            }
+
+            ghost.Move(deltaTime);
+            if (ghost.Distance <= _config.LostRadius)
+            {
+                ghost.Remove();
+                changed = true;
+            }
+        }
+
+        if (wasBlocked && !LockBlocked)
+        {
+            changed = true;
+        }
+
         if (HasTimer)
         {
             TimeLeft = Math.Max(0f, TimeLeft - deltaTime);
@@ -127,36 +166,64 @@ public class GameSession
         }
     }
 
-    public int Lock()
+    public void Lock()
     {
-        if (!IsActive)
+        if (!IsActive || LockBlocked)
         {
-            return 0;
+            return;
         }
 
         _justLocked.Clear();
         foreach (var attack in _attacks)
         {
-            if (IsLockable(attack) && UnderBeam(attack))
+            if (IsLockable(attack) && UnderBeam(attack.Angle))
             {
                 attack.Lock();
                 _justLocked.Add(attack);
             }
         }
 
-        if (_justLocked.Count == 0)
+        var removed = 0;
+        foreach (var ghost in _ghosts)
         {
-            return 0;
+            if (IsLockable(ghost) && UnderBeam(ghost.Angle))
+            {
+                ghost.Remove();
+                removed++;
+            }
         }
 
-        TargetsLocked?.Invoke(_justLocked);
+        if (_justLocked.Count == 0 && removed == 0)
+        {
+            return;
+        }
+
+        if (removed > 0)
+        {
+            _lockBlockedUntil = _elapsed + _config.GhostLockPenalty;
+        }
+
+        if (_justLocked.Count > 0)
+        {
+            TargetsLocked?.Invoke(_justLocked);
+        }
+
+        if (removed > 0)
+        {
+            GhostsRemoved?.Invoke(removed);
+        }
+
         Changed?.Invoke();
-        return _justLocked.Count;
     }
 
     public bool InLockZone(Attack attack)
     {
-        return IsActive && IsLockable(attack) && UnderBeam(attack);
+        return IsActive && IsLockable(attack) && UnderBeam(attack.Angle);
+    }
+
+    public bool InLockZone(Ghost ghost)
+    {
+        return IsActive && IsLockable(ghost) && UnderBeam(ghost.Angle);
     }
 
     public DefenseType GetDefense(Sector sector)
@@ -288,9 +355,14 @@ public class GameSession
         return attack.Spawned && !attack.Locked && !attack.Lost;
     }
 
-    private bool UnderBeam(Attack attack)
+    private static bool IsLockable(Ghost ghost)
     {
-        return (SweepAngle - attack.Angle + 360f) % 360f <= _config.LockWindow;
+        return ghost.Spawned && !ghost.Gone;
+    }
+
+    private bool UnderBeam(float angle)
+    {
+        return (SweepAngle - angle + 360f) % 360f <= _config.LockWindow;
     }
 
     private int CountOrders(DefenseType defense)
@@ -311,7 +383,9 @@ public class GameSession
     {
         _currentRound = _config.Rounds[RoundIndex];
         _attacks = _generator.Generate(_currentRound, _config.AngleSpread);
+        _ghosts = _generator.GenerateGhosts(_currentRound, _attacks, _config.GhostSeparation);
         _elapsed = 0f;
+        _lockBlockedUntil = 0f;
         ClockRunning = false;
         TimedOut = false;
         TimeLeft = _currentRound.TimerSeconds;
@@ -325,6 +399,14 @@ public class GameSession
             if (attack.SpawnDelay <= 0f)
             {
                 attack.Spawn();
+            }
+        }
+
+        foreach (var ghost in _ghosts)
+        {
+            if (ghost.SpawnDelay <= 0f)
+            {
+                ghost.Spawn();
             }
         }
 

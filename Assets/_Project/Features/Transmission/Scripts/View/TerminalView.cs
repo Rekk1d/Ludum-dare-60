@@ -28,6 +28,7 @@ public class TerminalView : MonoBehaviour
         session.TypeRevealed += OnTypeRevealed;
         session.RealityRevealed += OnRealityRevealed;
         session.TargetsLocked += OnTargetsLocked;
+        session.GhostsRemoved += OnGhostsRemoved;
         session.TargetLost += OnTargetLost;
         session.RoundResolved += OnRoundResolved;
     }
@@ -45,6 +46,7 @@ public class TerminalView : MonoBehaviour
         session.TypeRevealed -= OnTypeRevealed;
         session.RealityRevealed -= OnRealityRevealed;
         session.TargetsLocked -= OnTargetsLocked;
+        session.GhostsRemoved -= OnGhostsRemoved;
         session.TargetLost -= OnTargetLost;
         session.RoundResolved -= OnRoundResolved;
     }
@@ -58,6 +60,11 @@ public class TerminalView : MonoBehaviour
         Print($"ROUND {session.RoundIndex + 1:00}/{session.RoundCount:00}");
         Print("INCOMING TRANSMISSION...");
         Print($"{session.Attacks.Count} SIGNALS RECEIVED");
+        if (session.TimerScrambled)
+        {
+            Print("EMP DETECTED. CLOCK FAILURE");
+        }
+
         Print("AWAITING ORDERS");
     }
 
@@ -88,6 +95,14 @@ public class TerminalView : MonoBehaviour
         foreach (var attack in attacks)
         {
             Print($"{Name(attack)} LOCKED");
+        }
+    }
+
+    private void OnGhostsRemoved(int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            Print("FALSE ECHO - NO TARGET");
         }
     }
 

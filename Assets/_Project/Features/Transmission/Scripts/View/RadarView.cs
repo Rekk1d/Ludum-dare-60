@@ -31,6 +31,8 @@ public class RadarView : MonoBehaviour
     private readonly List<Image> _flashes = new List<Image>();
     private readonly List<bool> _detected = new List<bool>();
     private readonly List<float> _flashStart = new List<float>();
+    private readonly List<Image> _ghostBlips = new List<Image>();
+    private readonly List<bool> _ghostDetected = new List<bool>();
     private Texture2D _texture;
     private Color32[] _pixels;
     private float[] _pixelAngles;
@@ -134,8 +136,10 @@ public class RadarView : MonoBehaviour
         DestroyAll(_blips);
         DestroyAll(_frames);
         DestroyAll(_flashes);
+        DestroyAll(_ghostBlips);
         _detected.Clear();
         _flashStart.Clear();
+        _ghostDetected.Clear();
 
         foreach (var attack in controller.Session.Attacks)
         {
@@ -144,6 +148,12 @@ public class RadarView : MonoBehaviour
             _flashes.Add(CreateImage(flashFrames.Length > 0 ? flashFrames[0] : blipFrame1));
             _detected.Add(false);
             _flashStart.Add(-1f);
+        }
+
+        foreach (var ghost in controller.Session.Ghosts)
+        {
+            _ghostBlips.Add(CreateImage(blipFrame1));
+            _ghostDetected.Add(false);
         }
     }
 
@@ -176,9 +186,7 @@ public class RadarView : MonoBehaviour
             }
 
             var visible = _detected[i] && !attack.Lost;
-            var radians = attack.Angle * Mathf.Deg2Rad;
-            var distance = attack.Distance * radius;
-            var position = new Vector2(Mathf.Round(Mathf.Sin(radians) * distance), Mathf.Round(Mathf.Cos(radians) * distance));
+            var position = Position(attack.Angle, attack.Distance, radius);
             var showFake = !attack.IsReal && (attack.RealityRevealed || session.Phase != GamePhase.Planning);
 
             var blip = _blips[i];
@@ -202,6 +210,28 @@ public class RadarView : MonoBehaviour
                 SetSprite(flash, flashFrames[index]);
             }
         }
+
+        var ghosts = session.Ghosts;
+        for (var i = 0; i < _ghostBlips.Count && i < ghosts.Count; i++)
+        {
+            var ghost = ghosts[i];
+            if (ghost.Spawned && !_ghostDetected[i] && Passed(previous, current, ghost.Angle))
+            {
+                _ghostDetected[i] = true;
+            }
+
+            var blip = _ghostBlips[i];
+            blip.gameObject.SetActive(_ghostDetected[i] && !ghost.Gone);
+            blip.rectTransform.anchoredPosition = Position(ghost.Angle, ghost.Distance, radius);
+            SetSprite(blip, session.InLockZone(ghost) ? bloomFrame : blink ? blipFrame1 : blipFrame2);
+        }
+    }
+
+    private static Vector2 Position(float angle, float distance, float radius)
+    {
+        var radians = angle * Mathf.Deg2Rad;
+        var pixels = distance * radius;
+        return new Vector2(Mathf.Round(Mathf.Sin(radians) * pixels), Mathf.Round(Mathf.Cos(radians) * pixels));
     }
 
     private Image CreateImage(Sprite sprite)

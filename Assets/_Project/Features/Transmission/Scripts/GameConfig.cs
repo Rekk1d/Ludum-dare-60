@@ -9,6 +9,8 @@ public class GameConfig : ScriptableObject
     [SerializeField, Range(0f, 1f)] private float lostRadius = 0.336f;
     [SerializeField, Range(0f, 90f)] private float lockWindow = 15f;
     [SerializeField, Range(0f, 45f)] private float angleSpread = 25f;
+    [SerializeField, Min(0f)] private float ghostLockPenalty = 1.5f;
+    [SerializeField, Range(0f, 90f)] private float ghostSeparation = 20f;
     [SerializeField] private List<RoundConfig> rounds = new List<RoundConfig>
     {
         new RoundConfig(3, 3, 3, 0, 0, 30f, 30f, 40f, realityEnabled: false),
@@ -25,5 +27,7 @@ public class GameConfig : ScriptableObject
     public float LostRadius => lostRadius;
     public float LockWindow => lockWindow;
     public float AngleSpread => angleSpread;
+    public float GhostLockPenalty => ghostLockPenalty;
+    public float GhostSeparation => ghostSeparation;
     public IReadOnlyList<RoundConfig> Rounds => rounds;
 }
